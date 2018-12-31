@@ -5,6 +5,8 @@ let resultData = []
 
 request('https://www.reddit.com/r/futurology', function (error, response, body) {
   if (!error && response.statusCode == 200) {
+  
+  const baseUrl = 'https://www.reddit.com'
   const $ = cheerio.load(body)
   const articles = $('article')
   
@@ -13,7 +15,7 @@ request('https://www.reddit.com/r/futurology', function (error, response, body) 
     const picEl = $('a div[role=img]')
     const picUrl = picEl.css('background-image').slice(4,-1)
     const title = titleEl.text()
-    const articleUrl = titleEl.parent().attr('href')
+    const articleUrl = baseUrl + titleEl.parent().attr('href')
     const articleDetails = {i, title, articleUrl, picUrl}
     resultData.push(articleDetails)
   })
