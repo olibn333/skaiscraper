@@ -11,7 +11,7 @@ function scrapeInit() {
 
 function scrapeResultHandler(result) {
   console.log(result.length + " Articles scraped.")
-  mongoStore.storeInit()
+  mongoStore.storeInit(result)
 }
 
 //cheerio test - nice CSS selectors make things easier...

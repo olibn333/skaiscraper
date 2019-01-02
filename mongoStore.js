@@ -1,6 +1,6 @@
 const readline = require('readline');
 
-storeInit('a')
+//storeInit('a')
 
 function storeInit(file) {
   sendToDB(file)
