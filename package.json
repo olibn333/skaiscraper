@@ -1,0 +1,36 @@
+{
+  "name": "skaiscraper",
+  "version": "1.0.0",
+  "description": "Node Scraper",
+  "main": "redditScrape.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "htmlparser2": "^3.10.0",
+    "mongodb": "^3.1.10",
+    "puppeteer": "^1.11.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node redditScrape.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olibn333/skaiscraper.git"
+  },
+  "keywords": [
+    "node",
+    "scrape",
+    "cheerio",
+    "puppeteer",
+    "mongodb",
+    "react"
+  ],
+  "author": "olibn333",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olibn333/skaiscraper/issues"
+  },
+  "homepage": "https://github.com/olibn333/skaiscraper#readme"
+}
