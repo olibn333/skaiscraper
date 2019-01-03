@@ -5,25 +5,42 @@ const mongoStore = require('./mongoStore')
 scrapeInit()
 
 function scrapeInit() {
-  cheerio1()
+  getRedditArticles('https://www.reddit.com/r/futurology')
   console.log('Scraping...')
 }
 
 function scrapeResultHandler(result, errs) {
-  console.log(result.length + " Articles scraped.")
-  console.log(errs + " items not found.")
-  //console.log(result)
+  console.log(Object.keys(result.scrapes.articles).length + " Articles scraped.")
+  console.log(errs + " details not found.")
+  console.log(result)
+
   mongoStore.storeInit(result)
 }
 
-//cheerio test - nice CSS selectors make things easier...
-function cheerio1() {
 
-  let resultData = []
-  request('https://www.reddit.com/r/futurology', function (error, response, body) {
+function getRedditArticles(url) {
+  
+  //Connect
+  request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
-      const baseUrl = 'https://www.reddit.com'
+      //Create object to contain articles (db.site.timestamp)
+      const timestampNow = new Date().toISOString()
+
+      let resultData =
+      {
+        name : 'reddit',
+        baseUrl : 'https://www.reddit.com',
+        scrapes:
+        {
+          timestamp : timestampNow,
+          articles : {
+          //articles details go here
+          }
+        }
+      }
+
+      //Scrape details with cheerio
       const $ = cheerio.load(body)
       const articles = $('article')
       let errs = 0
@@ -43,7 +60,7 @@ function cheerio1() {
         }
 
         //Reddit URL
-        try { commentsUrl = baseUrl + titleEl.parent().attr('href') }
+        try { commentsUrl = resultData.baseUrl + titleEl.parent().attr('href') }
         catch (e) { 
           commentsUrl = 'Not Found' 
           errs +=1
@@ -68,12 +85,20 @@ function cheerio1() {
           errs +=1
         }
 
-        const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }
-        resultData.push(articleDetails)
-
+        //
+        const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }        
+        //resultData.scrapes.articles = Object.assign(resultData.scrapes.articles, articleDetails)
+        resultData.scrapes.articles[i] = articleDetails
+        
       })
       //callback
       scrapeResultHandler(resultData, errs)
     }
   })
 };
+
+function getDate(){
+  const timestampNow = new Date().toISOString()
+  console.log(timestampNow)
+  return timestampNow
+}
