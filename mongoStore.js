@@ -37,7 +37,7 @@ function sendToMongoDB(username, password, file) {
 
   MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
     if (err) throw err;
-    console.log("Database Connected!");
+    console.log("Database Connected! Ready to send " + file.length + " articles");
     db.close();
   });
 }
