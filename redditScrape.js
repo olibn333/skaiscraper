@@ -1,8 +1,28 @@
 const cheerio = require('cheerio');
 const request = require('request')
 const mongoStore = require('./mongoStore')
+const util = require('util')
 
 scrapeInit()
+
+function handleError(query, eCount) {
+  let output
+  try {
+    output = query.text()
+  } catch (error) {
+    eCount =+1
+    console.log("RETURNS ERROR")
+    return "Not found"
+  } finally {
+    if (output === undefined) {
+      eCount =+1
+      console.log("RETURNS UNDEFINED")
+      return "Not found"
+    } else {
+      return output
+    }
+  }
+}
 
 function scrapeInit() {
   getRedditArticles('https://www.reddit.com/r/futurology')
@@ -10,9 +30,10 @@ function scrapeInit() {
 }
 
 function scrapeResultHandler(result, errs) {
-  console.log(Object.keys(result.scrapes.articles).length + " Articles scraped.")
-  console.log(errs + " details not found.")
+  // console.log(Object.keys(result.scrapes.articles).length + " Articles scraped.")
+  // console.log(errs + " details not found.")
   console.log(result)
+  console.log(result.name)
 
   mongoStore.storeInit(result)
 }
@@ -29,16 +50,28 @@ function getRedditArticles(url) {
 
       let resultData =
       {
-        name : 'reddit',
+        'name' : 'reddit',
         baseUrl : 'https://www.reddit.com',
         scrapes:
         {
           timestamp : timestampNow,
-          articles : {
+          34 : {
           //articles details go here
           }
         }
       }
+
+
+/*       let newThing = {
+        [name]: {
+          scrapes: {
+            [timestampNow]: {
+
+            }
+          }
+        }
+      } */
+
 
       //Scrape details with cheerio
       const $ = cheerio.load(body)
@@ -79,17 +112,34 @@ function getRedditArticles(url) {
         }
 
         //Article URL
-        try { articleUrl = $('div a', element).eq(4).attr('href') }
+/*         try { articleUrl = $('div a', element).eq(4).attr('href') }
         catch (e) { 
           articleUrl = 'Not Found' 
           errs +=1
-        }
+        } */
+
+        const articleEl = $('diviyvglhub456789ihbv')
+
+        //console.log("WOOOP :", articleEl)
+        
+        // console.log("WOOOOOOOOOOOOP: " + util.inspect(articleEl))
+        // fuckOff = articleEl.eq(18).attr('href')
+        // fuckOff = fuckOff.slice(1,6)
+        // console.log("SHHHHHHHHHHHHH: " + fuckOff)
+
+        //articleUrl = handleError($('div a', element).eq(4).attr('href'), errs)
+
+        //console.log("WOOOO MATE", $('div a', element).eq(18).attr('href67'))
+
+        //const newThing = handleError(articleUrl, errs)
+
+        //console.log("Article URL: ", articleUrl)
 
         //
         const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }        
         //resultData.scrapes.articles = Object.assign(resultData.scrapes.articles, articleDetails)
-        resultData.scrapes.articles[i] = articleDetails
-        
+        resultData.scrapes[34][i] = articleDetails
+        //console.log(newThing.reddit.scrapes)
       })
       //callback
       scrapeResultHandler(resultData, errs)
