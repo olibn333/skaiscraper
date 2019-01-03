@@ -7,23 +7,24 @@ function storeInit(file) {
 }
 
 function sendToDB(file) {
-  let uname, pword
-  promptUserNameandPassword(printResult)
+  promptUserNameandPassword(file, handleResult)
 }
 
-function printResult(a,b) {
-  console.log("Got " + a + " and " + b)
+function handleResult(uname,pword,file) {
+  // console.log("Got " + a + " and " + b)
+  // console.log("Data: " + file.length + " articles")
+  sendToMongoDB(uname,pword,file)
 }
 
-function promptUserNameandPassword(callback) {
+function promptUserNameandPassword(file, callback) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  rl.question('MongoDB Username:', (answer) => {
-    rl.question('MongoDB Password:', (answer2) => {
-      callback(answer,answer2)
+  rl.question('MongoDB Username: ', (uname) => {
+    rl.question('MongoDB Password: ', (pword) => {
+      callback(uname,pword, file)
     rl.close();
     })
     
@@ -34,7 +35,7 @@ function sendToMongoDB(username, password, file) {
   const MongoClient = require('mongodb').MongoClient;
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
 
-  MongoClient.connect(url, function (err, db) {
+  MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
     if (err) throw err;
     console.log("Database Connected!");
     db.close();

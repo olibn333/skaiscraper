@@ -9,8 +9,10 @@ function scrapeInit() {
   console.log('Scraping...')
 }
 
-function scrapeResultHandler(result) {
+function scrapeResultHandler(result, errs) {
   console.log(result.length + " Articles scraped.")
+  console.log(errs + " items not found.")
+  //console.log(result)
   mongoStore.storeInit(result)
 }
 
@@ -24,39 +26,54 @@ function cheerio1() {
       const baseUrl = 'https://www.reddit.com'
       const $ = cheerio.load(body)
       const articles = $('article')
+      let errs = 0
 
       articles.each(function (i, element) {
 
-        let titleText, redditUrl, picUrl, articleUrl
+        let titleEl, titleText, commentsUrl, picUrl, articleUrl
 
         //Title
         try {
-          const titleEl = $('a h2', element)
+          titleEl = $('a h2', element)
           titleText = titleEl ? titleEl.text() : 'Not Found'
         }
-        catch (e) { titleText = 'Not Found' }
+        catch (e) { 
+          titleText = 'Not Found'
+          errs +=1
+        }
 
         //Reddit URL
-        try { redditUrl = baseUrl + titleEl.parent().attr('href') }
-        catch (e) { redditUrl = 'Not Found' }
+        try { commentsUrl = baseUrl + titleEl.parent().attr('href') }
+        catch (e) { 
+          commentsUrl = 'Not Found' 
+          errs +=1
+          
+          return console.log(e)
+        }
 
         //Image URL
         try {
           const picEl = $('a div[role=img]', element)
           picUrl = picEl.css('background-image').slice(4, -1)
         }
-        catch (e) { picUrl = 'Not Found' }
+        catch (e) { 
+          picUrl = 'Not Found' 
+          errs +=1
+        }
 
         //Article URL
         try { articleUrl = $('div a', element).eq(4).attr('href') }
-        catch (e) { articleUrl = 'Not Found' }
+        catch (e) { 
+          articleUrl = 'Not Found' 
+          errs +=1
+        }
 
-        const articleDetails = { i, titleText, redditUrl, picUrl, articleUrl }
+        const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }
         resultData.push(articleDetails)
 
       })
       //callback
-      scrapeResultHandler(resultData)
+      scrapeResultHandler(resultData, errs)
     }
   })
 };
