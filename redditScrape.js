@@ -21,20 +21,24 @@ function checkUndefined(query) {
 
 function scrapeInit() {
   const url = 'https://www.reddit.com/r/futurology'
-  getRedditArticles(url)
+  getRedditArticlesFromSubreddit(url)
   console.log('Scraping ' + url + '...')
  }
 
-function scrapeResultHandler(result, site, errs) {
-  const scrapes = result[site].scrapes
+
+function scrapeResultHandler(result, errs) {
+  // const scrapes = result[site].scrapes
   //Array of timestamps
-  const timestamps = Object.keys(scrapes)
+  // const timestamps = Object.keys(scrapes)
   //Use pop() to get last timestamp key from array
-  console.log(Object.keys(scrapes[timestamps.pop()]).length + " Articles scraped.")
-  console.log(errs + " Details not found.")
-  console.log(result)
+  //console.log(Object.keys(scrapes[timestamps.pop()]).length + " Articles scraped.")
+  //console.log(errs + " Details not found.")
+  //console.log(result)
   //console.log(timestamps)
   //console.log(result[site].scrapes)
+
+  //console.log(result.site.subCategories.scrape.length)
+  console.log(result.site.subCategory.scrapes.articles[23].titleText)
 
   //mongoStore.storeInit(result)
 }
@@ -50,32 +54,59 @@ function createResultsObject(name, baseUrl) {
   }
 }
 
-function getRedditArticles(url) {
-
-  //TODO - Make generic reddit scraper to feed any subreddit url. 
-  //Could pull [name] and [baseUrl] from the url argument of this function. May need to add subreddit object in our structure.
+function createSiteResultsObject(url) {
+  
+  //TODO - Make generic reddit scraper to create the correct object result for any subreddit url. 
+  //Could pull [name] and [baseUrl] from the url argument of this function. May need to add subreddit object in our structure?
   // Perhaps could also make a url parsing module for this?
+
+  const timestampNow = new Date().toISOString()
 
   const domainName = extractRootDomain(url)
   const hostName = extractHostname(url)
   const siteName = domainName.split('.')[0]
+
+  //reddit specific:
   const subReddit = url.split('/r/')[1]
   const rootSite = url.split('/r/')[0]
+
   console.log("Some potential variable names:", rootSite, domainName, subReddit, hostName, siteName)
-  
+
+  //trying to imagine the top level object for easy indexing. 
+  //constant key strings seems better performance for indexing the mongodb
+  return {
+    'site' : {
+      'name' : siteName,
+      'url' : rootSite,
+      'subCategory' : {
+        'name' : subReddit,
+        'url' : url,
+        'scrapes' : {
+          'timestamp' : timestampNow,
+          'articles' : {
+            //articleDetails here
+          }
+        }
+      }
+    }
+  }
+}
+
+function getRedditArticlesFromSubreddit(url) {
   
   //Connect
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
+      let resultData = createSiteResultsObject(url)
       //Create object to contain articles (db.site.scrapes.timestamp)
-      let resultData = createResultsObject('reddit', 'https://www.reddit.com')
+      //let resultData = createResultsObject('reddit', 'https://www.reddit.com')
 
       //Create timestamp for scrape session
-      const timestampNow = new Date().toISOString()
+      //const timestampNow = new Date().toISOString()
 
       //Create empty object with timestamp
-      resultData.reddit.scrapes[timestampNow] = {}
+      //resultData.reddit.scrapes[timestampNow] = {}
 
       //Scrape details with cheerio
       const $ = cheerio.load(body)
@@ -90,7 +121,7 @@ function getRedditArticles(url) {
         titleText = checkUndefined( titleEl.text() )
 
         //Reddit URL
-        commentsUrl = resultData.reddit.baseUrl + checkUndefined( titleEl.parent().attr('href') )
+        commentsUrl = resultData.site.url + checkUndefined( titleEl.parent().attr('href') )
 
         //Image URL
         try {
@@ -106,13 +137,24 @@ function getRedditArticles(url) {
         articleUrl = checkUndefined( $('div a', element).eq(4).attr('href') )
 
         //Fill timestamped object with scrape results
-        i += 1
-        const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }
-        let currentScrape = resultData.reddit.scrapes[timestampNow]
-        currentScrape[i] = Object.assign({}, articleDetails)
+        //i += 1
+        const articleDetails = { 
+          'i' : i, 
+          'details' : { 
+            titleText, commentsUrl, picUrl, articleUrl 
+          }
+        }
+
+        //resultData.site.subCategory.scrapes.articles.push(articleDetails)
+        resultData.site.subCategory.scrapes.articles[i] = articleDetails
+
+        // let currentScrape = resultData.reddit.scrapes[timestampNow]
+        // currentScrape[i] = Object.assign({}, articleDetails)
+
       })
       //callback
-      scrapeResultHandler(resultData, 'reddit', errorLog.errorCount)
+      //const result = createSiteResultsObject(url, resultData)
+      scrapeResultHandler(resultData, errorLog.errorCount)
     }
   })
 }
