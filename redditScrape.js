@@ -32,13 +32,15 @@ function scrapeResultHandler(result, errs) {
   // const timestamps = Object.keys(scrapes)
   //Use pop() to get last timestamp key from array
   //console.log(Object.keys(scrapes[timestamps.pop()]).length + " Articles scraped.")
-  //console.log(errs + " Details not found.")
   //console.log(result)
   //console.log(timestamps)
   //console.log(result[site].scrapes)
 
   //console.log(result.site.subCategories.scrape.length)
-  console.log(result.site.subCategory.scrapes.articles[23].titleText)
+  console.log(result.site.subCategory.scrape.articles.length + " Article(s) Scraped.")
+  console.log(errs + " Detail(s) not found.")
+  console.log("Test title call: ", result.site.subCategory.scrape.articles[23].titleText)
+  console.log(result)
 
   //mongoStore.storeInit(result)
 }
@@ -81,11 +83,11 @@ function createSiteResultsObject(url) {
       'subCategory' : {
         'name' : subReddit,
         'url' : url,
-        'scrapes' : {
+        'scrape' : {
           'timestamp' : timestampNow,
-          'articles' : {
+          'articles' : [
             //articleDetails here
-          }
+          ]
         }
       }
     }
@@ -138,15 +140,11 @@ function getRedditArticlesFromSubreddit(url) {
 
         //Fill timestamped object with scrape results
         //i += 1
-        const articleDetails = { 
-          'i' : i, 
-          'details' : { 
-            titleText, commentsUrl, picUrl, articleUrl 
-          }
-        }
 
+        const articleDetails = {i, titleText, commentsUrl, picUrl, articleUrl}
+        
         //resultData.site.subCategory.scrapes.articles.push(articleDetails)
-        resultData.site.subCategory.scrapes.articles[i] = articleDetails
+        resultData.site.subCategory.scrape.articles.push(articleDetails)
 
         // let currentScrape = resultData.reddit.scrapes[timestampNow]
         // currentScrape[i] = Object.assign({}, articleDetails)
