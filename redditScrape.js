@@ -53,14 +53,15 @@ function createResultsObject(name, baseUrl) {
 function getRedditArticles(url) {
 
   //TODO - Make generic reddit scraper to feed any subreddit url. 
-  //Could pull [name] and [baseUrl] from the url argument of this function.
-  // Perhaps could also make some url parsing module for this?
+  //Could pull [name] and [baseUrl] from the url argument of this function. May need to add subreddit object in our structure.
+  // Perhaps could also make a url parsing module for this?
 
   const domainName = extractRootDomain(url)
   const hostName = extractHostname(url)
   const siteName = domainName.split('.')[0]
   const subReddit = url.split('/r/')[1]
-  console.log(domainName, subReddit, hostName, siteName)
+  const rootSite = url.split('/r/')[0]
+  console.log("Some potential variable names:", rootSite, domainName, subReddit, hostName, siteName)
   
   
   //Connect
