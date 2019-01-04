@@ -40,7 +40,10 @@ function sendToMongoDB(username, password, file) {
     console.log("Database Connected! Ready to send " + file.length + " articles");
     const dbo = db.db('skaiScraper')
     const scraperCollection = dbo.collection('sites')
-    scraperCollection.insertOne(file)
+    scraperCollection.insertOne(file, function(err, res) {
+      if (err) throw err;
+      console.log("Inserted " + res.ops.length + " articles.")
+    })
     db.close();
   });
 }

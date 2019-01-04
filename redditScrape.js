@@ -26,7 +26,7 @@ function scrapeInit() {
  }
 
 
-function scrapeResultHandler(result, errs) {
+function scrapeResultHandler(url, resultData, errs) {
   // const scrapes = result[site].scrapes
   //Array of timestamps
   // const timestamps = Object.keys(scrapes)
@@ -36,12 +36,12 @@ function scrapeResultHandler(result, errs) {
   //console.log(timestamps)
   //console.log(result[site].scrapes)
 
-  console.log(result.site.subCategory.scrape.articles.length + " Article(s) Scraped.")
-  console.log(errs + " Detail(s) not found.")
+  // console.log(result.site.subCategory.scrape.articles.length + " Article(s) Scraped.")
+  // console.log(errs + " Detail(s) not found.")
   // console.log("Test title call: ", result.site.subCategory.scrape.articles[23].titleText)
   // console.log(result)
 
-  mongoStore.storeInit(result)
+  mongoStore.storeInit(createSiteResultsObject(url,resultData))
 }
 
 //Build objects for scrape result data
@@ -55,13 +55,13 @@ function createResultsObject(name, baseUrl) {
   }
 }
 
-function createSiteResultsObject(url) {
+function createSiteResultsObject(url, articles) {
   
   //TODO - Make generic reddit scraper to create the correct object result for any subreddit url. 
   //Could pull [name] and [baseUrl] from the url argument of this function. May need to add subreddit object in our structure?
   // Perhaps could also make a url parsing module for this?
 
-  const timestampNow = new Date().toISOString()
+  const timestampNow = new Date()
 
   const domainName = extractRootDomain(url)
   const hostName = extractHostname(url)
@@ -75,22 +75,25 @@ function createSiteResultsObject(url) {
 
   //trying to imagine the top level object for easy indexing. 
   //constant key strings seems better performance for indexing the mongodb
-  return {
-    'site' : {
-      'name' : siteName,
-      'url' : rootSite,
-      'subCategory' : {
-        'name' : subReddit,
-        'url' : url,
-        'scrape' : {
-          'timestamp' : timestampNow,
-          'articles' : [
-            //articleDetails here
-          ]
-        }
-      }
-    }
-  }
+  //   return {
+  //     'site' : {
+  //       'siteName' : siteName,
+  //       'siteUrl' : rootSite,
+  //       'subCategory' : {
+  //         'name' : subReddit,
+  //         'url' : url,
+  //         'scrape' : {
+  //           'timestamp' : timestampNow,
+  //           'articles' : [
+  //             //articleDetails here
+  //           ]
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+return {siteName, rootSite, subReddit, url, timestampNow, articles}
 }
 
 function getRedditArticlesFromSubreddit(url) {
@@ -99,7 +102,8 @@ function getRedditArticlesFromSubreddit(url) {
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
-      let resultData = createSiteResultsObject(url)
+      let resultData = []
+      //let resultData = createSiteResultsObject(url)
       //Create object to contain articles (db.site.scrapes.timestamp)
       //let resultData = createResultsObject('reddit', 'https://www.reddit.com')
 
@@ -122,7 +126,8 @@ function getRedditArticlesFromSubreddit(url) {
         titleText = checkUndefined( titleEl.text() )
 
         //Reddit URL
-        commentsUrl = resultData.site.url + checkUndefined( titleEl.parent().attr('href') )
+        //commentsUrl = resultData.site.url + checkUndefined( titleEl.parent().attr('href') )
+        commentsUrl = checkUndefined( titleEl.parent().attr('href') )
 
         //Image URL
         try {
@@ -143,7 +148,8 @@ function getRedditArticlesFromSubreddit(url) {
         const articleDetails = {i, titleText, commentsUrl, picUrl, articleUrl}
         
         //resultData.site.subCategory.scrapes.articles.push(articleDetails)
-        resultData.site.subCategory.scrape.articles.push(articleDetails)
+        //resultData.site.subCategory.scrape.articles.push(articleDetails)
+        resultData.push(articleDetails)
 
         // let currentScrape = resultData.reddit.scrapes[timestampNow]
         // currentScrape[i] = Object.assign({}, articleDetails)
@@ -151,7 +157,7 @@ function getRedditArticlesFromSubreddit(url) {
       })
       //callback
       //const result = createSiteResultsObject(url, resultData)
-      scrapeResultHandler(resultData, errorLog.errorCount)
+      scrapeResultHandler(url, resultData, errorLog.errorCount)
     }
   })
 }
