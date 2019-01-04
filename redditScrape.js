@@ -36,13 +36,12 @@ function scrapeResultHandler(result, errs) {
   //console.log(timestamps)
   //console.log(result[site].scrapes)
 
-  //console.log(result.site.subCategories.scrape.length)
   console.log(result.site.subCategory.scrape.articles.length + " Article(s) Scraped.")
   console.log(errs + " Detail(s) not found.")
-  console.log("Test title call: ", result.site.subCategory.scrape.articles[23].titleText)
-  console.log(result)
+  // console.log("Test title call: ", result.site.subCategory.scrape.articles[23].titleText)
+  // console.log(result)
 
-  //mongoStore.storeInit(result)
+  mongoStore.storeInit(result)
 }
 
 //Build objects for scrape result data
@@ -72,7 +71,7 @@ function createSiteResultsObject(url) {
   const subReddit = url.split('/r/')[1]
   const rootSite = url.split('/r/')[0]
 
-  console.log("Some potential variable names:", rootSite, domainName, subReddit, hostName, siteName)
+  //console.log("Some potential variable names:", rootSite, domainName, subReddit, hostName, siteName)
 
   //trying to imagine the top level object for easy indexing. 
   //constant key strings seems better performance for indexing the mongodb

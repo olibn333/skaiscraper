@@ -38,6 +38,9 @@ function sendToMongoDB(username, password, file) {
   MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
     if (err) throw err;
     console.log("Database Connected! Ready to send " + file.length + " articles");
+    const dbo = db.db('skaiScraper')
+    const scraperCollection = dbo.collection('sites')
+    scraperCollection.insertOne(file)
     db.close();
   });
 }
