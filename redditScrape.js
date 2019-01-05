@@ -4,13 +4,9 @@ const mongoStore = require('./mongoStore')
 
 scrapeInit()
 
-
-//Error log as object
-let errorLog = {
-  errorCount: 0,
-  errorsArray: []
+let globalErrorLog = {
+  errorCount: 0
 }
-
 
 //Checks if query returns undefined
 function checkUndefined(query) {
@@ -31,9 +27,10 @@ function scrapeInit() {
 
 function scrapeResultHandler(scrapeResultsObject) {
 
-  console.log(scrapeResultsObject.articlesArray.length + " Articles scraped.")
-  console.log(scrapeResultsObject.errorLog.errorCount + " Details not found.")
-  
+  console.log(scrapeResultsObject.length + " Articles scraped.")
+  console.log(globalErrorLog.errorCount + " Details not found.")
+  //console.log(scrapeResultsObject)
+
   mongoStore.sendToDB(scrapeResultsObject)
 }
 
@@ -51,13 +48,35 @@ function createScrapeResultsObject(url, errorLog, articlesArray) {
   return { url, siteName, rootSite, subReddit, scrapeTimestamp, errorLog, articlesArray }
 }
 
+function createArticleObject(url, errorLog, articleDetails) {
+
+  const scrapeTimestamp = new Date()
+  const domainName = extractRootDomain(url)
+  const hostName = extractHostname(url)
+  const siteName = domainName.split('.')[0]
+
+  //reddit specific:
+  const subReddit = url.split('/r/')[1]
+  const rootSite = url.split('/r/')[0]
+
+  return { url, siteName, rootSite, subReddit, scrapeTimestamp, errorLog, articleDetails }
+}
+
 function getRedditArticlesFromSubreddit(url) {
+
+  //Error log as object
+  let errorLog = {
+    errorCount: 0
+  }
+
+  //let scrapeResultsObject = createScrapeResultsObject(url, errorLog, [])
+  let scrapeResultsObject = []
 
   //Connect
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
-      let articlesArray = []
+      let articleObject = createArticleObject(url, errorLog, [])
 
       //Scrape details with cheerio
       const $ = cheerio.load(body)
@@ -72,8 +91,11 @@ function getRedditArticlesFromSubreddit(url) {
         titleText = checkUndefined(titleEl.text())
 
         //Reddit URL
-        //commentsUrl = resultData.site.url + checkUndefined( titleEl.parent().attr('href') )
         commentsUrl = checkUndefined(titleEl.parent().attr('href'))
+        if (commentsUrl !== "Not Found") {
+          commentsUrl = articleObject.rootSite + commentsUrl
+        }
+        //commentsUrl = checkUndefined(titleEl.parent().attr('href'))
 
         //Image URL
         try {
@@ -83,20 +105,23 @@ function getRedditArticlesFromSubreddit(url) {
         catch (e) {
           picUrl = "Not Found"
           errorLog.errorCount += 1
-          errorLog.errorsArray.push(e)
         }
 
         //Article URL
         articleUrl = checkUndefined($('div a', element).eq(4).attr('href'))
 
+        //Process
         const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }
+        // scrapeResultsObject.articlesArray.push(articleDetails)
+        // scrapeResultsObject.errorLog = errorLog
 
-        articlesArray.push(articleDetails)
-
+        globalErrorLog.errorCount += errorLog.errorCount
+        articleObject.articleDetails = articleDetails
+        scrapeResultsObject.push(articleObject)
+        
       })
 
       //callback
-      const scrapeResultsObject = createScrapeResultsObject(url, errorLog, articlesArray)
       scrapeResultHandler(scrapeResultsObject)
     }
   })

@@ -28,12 +28,13 @@ function promptUserNameandPassword(file, callback) {
 function sendToMongoDB(username, password, file) {
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
 
-  MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
+  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err;
-    console.log("Database Connected! Sending " + file.articlesArray.length + " articles");
+    console.log("Database Connected! Sending " + file.length + " articles");
     const dbo = db.db('skaiScraper')
-    const scraperCollection = dbo.collection('sites')
-    scraperCollection.insertOne(file, function(err, res) {
+    const scraperCollection = dbo.collection('articles')
+    //const indexes = db.articles.getIndexes()
+    scraperCollection.insertMany(file, function(err, res) {
       if (err) throw err;
       console.log("Inserted " + res.ops.length + " document(s).")
     })
