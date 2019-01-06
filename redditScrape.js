@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const request = require('request')
+const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
 
 scrapeInit()
@@ -27,14 +28,14 @@ function scrapeInit() {
 
 function scrapeResultHandler(scrapeResultsObject) {
 
-  console.log(scrapeResultsObject.length + " Articles scraped.")
+  console.log(scrapeResultsObject.articlesArray.length + " Articles scraped.")
   console.log(globalErrorLog.errorCount + " Details not found.")
   //console.log(scrapeResultsObject)
 
   mongoStore.sendToDB(scrapeResultsObject)
 }
 
-function createScrapeResultsObject(url, errorLog, articlesArray) {
+function createScrapeResultsObject(url, errorLog, articlesArray, scrapeId) {
 
   const scrapeTimestamp = new Date()
   const domainName = extractRootDomain(url)
@@ -45,7 +46,7 @@ function createScrapeResultsObject(url, errorLog, articlesArray) {
   const subReddit = url.split('/r/')[1]
   const rootSite = url.split('/r/')[0]
 
-  return { url, siteName, rootSite, subReddit, scrapeTimestamp, errorLog, articlesArray }
+  return { scrapeId, url, siteName, rootSite, subReddit, scrapeTimestamp, errorLog, 'articleCount' : articlesArray.length, articlesArray }
 }
 
 function createArticleObject(url, errorLog, articleDetails) {
@@ -59,7 +60,7 @@ function createArticleObject(url, errorLog, articleDetails) {
   const subReddit = url.split('/r/')[1]
   const rootSite = url.split('/r/')[0]
 
-  return { url, siteName, rootSite, subReddit, scrapeTimestamp, errorLog, articleDetails }
+  return Object.assign(articleDetails, { 'sourceUrl': url, errorLog})
 }
 
 function getRedditArticlesFromSubreddit(url) {
@@ -70,13 +71,12 @@ function getRedditArticlesFromSubreddit(url) {
   }
 
   //let scrapeResultsObject = createScrapeResultsObject(url, errorLog, [])
-  let scrapeResultsObject = []
+  let articlesArray = []
+  const scrapeId = uuid()
 
   //Connect
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-
-      let articleObject = createArticleObject(url, errorLog, [])
 
       //Scrape details with cheerio
       const $ = cheerio.load(body)
@@ -93,7 +93,7 @@ function getRedditArticlesFromSubreddit(url) {
         //Reddit URL
         commentsUrl = checkUndefined(titleEl.parent().attr('href'))
         if (commentsUrl !== "Not Found") {
-          commentsUrl = articleObject.rootSite + commentsUrl
+          commentsUrl = url.split('/r/')[0] + commentsUrl
         }
         //commentsUrl = checkUndefined(titleEl.parent().attr('href'))
 
@@ -110,18 +110,25 @@ function getRedditArticlesFromSubreddit(url) {
         //Article URL
         articleUrl = checkUndefined($('div a', element).eq(4).attr('href'))
 
+        //Article Id
+        articleId = scrapeId + "-" + i
+
         //Process
-        const articleDetails = { i, titleText, commentsUrl, picUrl, articleUrl }
+        const articleDetails = { articleId, titleText, commentsUrl, picUrl, articleUrl }
+
+        globalErrorLog.errorCount += errorLog.errorCount
+
         // scrapeResultsObject.articlesArray.push(articleDetails)
         // scrapeResultsObject.errorLog = errorLog
 
-        globalErrorLog.errorCount += errorLog.errorCount
-        articleObject.articleDetails = articleDetails
-        scrapeResultsObject.push(articleObject)
+        const articleObject = createArticleObject(url, errorLog, articleDetails)
+
+        articlesArray.push(articleObject)
         
       })
 
       //callback
+      const scrapeResultsObject = createScrapeResultsObject(url, globalErrorLog, articlesArray, scrapeId)
       scrapeResultHandler(scrapeResultsObject)
     }
   })

@@ -3,7 +3,16 @@ const MongoClient = require('mongodb').MongoClient;
 
 
 function sendToDB(file) {
-  promptUserNameandPassword(file, handleResult)
+  try {
+    const creds = require('./config')
+    uname = creds.username
+    pword = creds.password
+    sendToMongoDB(uname,pword,file)
+  }
+  catch(e){
+    console.log("No local config file found. Please enter username and password:")
+    promptUserNameandPassword(file, handleResult)
+  }
 }
 
 function handleResult(uname,pword,file) {
@@ -28,16 +37,30 @@ function promptUserNameandPassword(file, callback) {
 function sendToMongoDB(username, password, file) {
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
 
+  //Arrticles Array
+  const articlesArray = file.articlesArray
+  //Scrape Object
+  const scrapeObject = Object.assign(file,{})
+  delete scrapeObject.articlesArray
+
+
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err;
-    console.log("Database Connected! Sending " + file.length + " articles");
-    const dbo = db.db('skaiScraper')
-    const scraperCollection = dbo.collection('articles')
-    //const indexes = db.articles.getIndexes()
-    scraperCollection.insertMany(file, function(err, res) {
+    console.log("Database Connected!");
+    const dbo = db.db('skaiScraper-referenced')
+
+    //Insert Scrape Object
+    dbo.collection('scrapes').insertOne(scrapeObject, function(err, res) {
       if (err) throw err;
-      console.log("Inserted " + res.ops.length + " document(s).")
+      console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
     })
+
+    //Insert Articles Array
+    dbo.collection('articles').insertMany(articlesArray, function(err, res) {
+      if (err) throw err;
+      console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+    })
+
     db.close();
   });
 }
