@@ -27,6 +27,20 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    // Gatsby's data processing layer begins with “source” plugins. Here we
+    // setup the site to pull data from the "documents" collection in a local
+    // MongoDB instance
+    {
+      resolve: `gatsby-source-mongodb`,
+      options: {
+        dbName: `skaiScraper-referenced`,
+        collection: [`scrapes`, `articles`],
+        map: { articles: { /* WHAT DO I DO HERE? */ } }
+      },
+      server: { address: `cluster0-ywxua.mongodb.net`, port: 43532 },
+      auth: { user: `joss-c`, password: `6zFND6DWQ5EXgRM` },
+      extraParams: { replicaSet: `test-shard-0`, ssl: true, authSource: `admin` }
+    }
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.app/offline
     // 'gatsby-plugin-offline',
