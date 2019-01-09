@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 function sendToDB(file) {
   try {
-    const creds = require('./config')
+    const creds = require('../skai-config')
     uname = creds.username
     pword = creds.password
     sendToMongoDB(uname,pword,file)
