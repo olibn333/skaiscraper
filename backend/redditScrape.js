@@ -1,7 +1,8 @@
 const cheerio = require('cheerio');
 const request = require('request')
 const uuid = require('uuid/v1');
-const mongoStore = require('./mongoStore')
+const scrapeResultHandler = require('./scrapeResultHandler')
+const handleDomain = require('./handleDomain')
 
 scrapeInit()
 
@@ -25,21 +26,11 @@ function scrapeInit() {
   console.log('Scraping ' + url + '...')
 }
 
-
-function scrapeResultHandler(scrapeResultsObject) {
-
-  console.log(scrapeResultsObject.articlesArray.length + " Articles scraped.")
-  console.log(globalErrorLog.errorCount + " Details not found.")
-  //console.log(scrapeResultsObject)
-
-  mongoStore.sendToDB(scrapeResultsObject)
-}
-
 function createScrapeResultsObject(url, errorLog, articlesArray, scrapeId) {
 
   const scrapeTimestamp = new Date()
-  const domainName = extractRootDomain(url)
-  const hostName = extractHostname(url)
+  const domainName = handleDomain.extractRootDomain(url)
+  const hostName = handleDomain.extractHostname(url)
   const siteName = domainName.split('.')[0]
 
   //reddit specific:
@@ -52,8 +43,8 @@ function createScrapeResultsObject(url, errorLog, articlesArray, scrapeId) {
 function createArticleObject(url, errorLog, articleDetails) {
 
   const scrapeTimestamp = new Date()
-  const domainName = extractRootDomain(url)
-  const hostName = extractHostname(url)
+  const domainName = handleDomain.extractRootDomain(url)
+  const hostName = handleDomain.extractHostname(url)
   const siteName = domainName.split('.')[0]
 
   //reddit specific:
@@ -129,47 +120,7 @@ function getRedditArticlesFromSubreddit(url) {
 
       //callback
       const scrapeResultsObject = createScrapeResultsObject(url, globalErrorLog, articlesArray, scrapeId)
-      scrapeResultHandler(scrapeResultsObject)
+      scrapeResultHandler(scrapeResultsObject, globalErrorLog)
     }
   })
-}
-
-
-//Ripped ruthlessly from https://stackoverflow.com/questions/8498592/extract-hostname-name-from-string
-function extractHostname(url) {
-  let hostname;
-  //find & remove protocol (http, ftp, etc.) and get hostname
-
-  if (url.indexOf("//") > -1) {
-    hostname = url.split('/')[2];
-  }
-  else {
-    hostname = url.split('/')[0];
-  }
-
-  //find & remove port number
-  hostname = hostname.split(':')[0];
-  //find & remove "?"
-  hostname = hostname.split('?')[0];
-
-  return hostname;
-}
-
-// To address those who want the "root domain," use this function:
-function extractRootDomain(url) {
-  let domain = extractHostname(url),
-    splitArr = domain.split('.'),
-    arrLen = splitArr.length;
-
-  //extracting the root domain here
-  //if there is a subdomain 
-  if (arrLen > 2) {
-    domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
-    //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
-    if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
-      //this is using a ccTLD
-      domain = splitArr[arrLen - 3] + '.' + domain;
-    }
-  }
-  return domain;
 }

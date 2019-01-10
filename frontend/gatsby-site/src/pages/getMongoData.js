@@ -21,7 +21,7 @@ const articles = ({ data }) => {
             <TableBody>
               {data.allMongodbSkaiScraperreferencedArticles.edges.map(({ node }, index) => (
                 <TableRow key={index}>
-                  <TableCell style={{ padding: '24px 4px 4px 4px'}}>
+                  <TableCell style={{ padding: '1rem 0.25rem 0.25rem 0.25rem'}}>
                     <img
                       style={{ display: 'block' }}
                       src={node.picUrl}
