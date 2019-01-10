@@ -33,18 +33,28 @@ function genericScrape(url) {
   })
 }
 
+//Async to send multiple single documents in a row
+function asyncSendToDB(data) {
+  return new Promise(function(resolve, reject) {
+    resolve(mongoStore.sendToDB(data))
+  })
+}
+
 async function scrapeMultipleSites(urls) {
-  let scrapedSitesData = []
+  let articlesArray = []
   for (url of urls) {
     console.log("Scraping ", url)
     //Await promise to resolve
-    const scrapeData = await genericScrape(url)
-    console.log(scrapeData)
-    scrapedSitesData.push(scrapeData)
-    }
-  //console.log(scrapedSitesData)
-  console.log("SCRAPE COMPLETE")
-  return scrapedSitesData
+    const currentScrapeData = await genericScrape(url)
+    console.log(currentScrapeData)
+    articlesArray.push(currentScrapeData)
+  }
+  const scrapeResultsObject = {
+    'scrapeTimeStamp': articlesArray[0].scrapeTimestamp,
+    'articleCount': articlesArray.length + 1,
+    'articlesArray': articlesArray
+  }
+  await asyncSendToDB(scrapeResultsObject)
 }
 
 //Arbitrary array of article urls
@@ -55,12 +65,15 @@ const sitesToScrape = [
   'https://www.modernhealthcare.com/article/20190104/NEWS/190109951'
 ]
 
-//Working, except not writing to database
-//!!MongoError: docs parameter must be an array of documents
-(async () => {
-  let scrapeResults = await scrapeMultipleSites(sitesToScrape)
-  scrapeResults = { ...scrapeResults }
-  mongoStore.sendToDB(scrapeResults)
-})().catch(err => {
-  console.error(err)
-})
+//Initiate scrape
+scrapeMultipleSites(sitesToScrape)
+
+
+// THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED
+// (async () => {
+//   let scrapeResults = await scrapeMultipleSites(sitesToScrape)
+//   scrapeResults = { ...scrapeResults }
+//   mongoStore.sendToDB(scrapeResults)
+// })().catch(err => {
+//   console.error(err)
+// })

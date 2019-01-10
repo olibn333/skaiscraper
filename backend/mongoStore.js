@@ -2,21 +2,21 @@ const readline = require('readline');
 const MongoClient = require('mongodb').MongoClient;
 
 
-function sendToDB(file) {
+async function sendToDB(file) {
   try {
     const creds = require('../skai-config')
     uname = creds.username
     pword = creds.password
-    sendToMongoDB(uname,pword,file)
+    await sendToMongoDB(uname, pword, file)
   }
-  catch(e){
+  catch (e) {
     console.log("No local config file found. Please enter username and password:")
     promptUserNameandPassword(file, handleResult)
   }
 }
 
-function handleResult(uname,pword,file) {
-  sendToMongoDB(uname,pword,file)
+function handleResult(uname, pword, file) {
+  sendToMongoDB(uname, pword, file)
 }
 
 function promptUserNameandPassword(file, callback) {
@@ -28,9 +28,9 @@ function promptUserNameandPassword(file, callback) {
   rl.question('MongoDB Username: ', (uname) => {
     rl.question('MongoDB Password: ', (pword) => {
       callback(uname, pword, file)
-    rl.close();
+      rl.close();
     })
-    
+
   });
 };
 
@@ -40,28 +40,29 @@ function sendToMongoDB(username, password, file) {
   //Arrticles Array
   const articlesArray = file.articlesArray
   //Scrape Object
-  const scrapeObject = Object.assign(file,{})
+  const scrapeObject = Object.assign(file, {})
   delete scrapeObject.articlesArray
 
 
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
-    if (err) throw err;
-    console.log("Database Connected!");
+    if (err) throw err
+    console.log("Database Connected!")
     const dbo = db.db('skaiScraper-referenced')
 
-    //Insert Scrape Object
-    dbo.collection('scrapes').insertOne(scrapeObject, function(err, res) {
-      if (err) throw err;
-      console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
-    })
+    return new Promise(function (resolve, reject) {
+      //Insert Scrape Object
+      dbo.collection('scrapes').insertOne(scrapeObject, function (err, res) {
+        if (err) throw err
+        console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
+      })
 
-    //Insert Articles Array
-    dbo.collection('articles').insertMany(articlesArray, function(err, res) {
-      if (err) throw err;
-      console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+      //Insert Articles Array
+      dbo.collection('articles').insertMany(articlesArray, function (err, res) {
+        if (err) throw err
+        console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+      })
+      resolve(db.close())
     })
-
-    db.close();
   });
 }
 
