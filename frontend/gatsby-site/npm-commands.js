@@ -1,15 +1,16 @@
-var npm = require('npm');
+var npm = require('npm')
 
 npm.load(function(err) {
-  // handle errors
+  //Handle errors
   console.log("Load error: ", err)
-  // run npm commands
+
+  //Run npm commands
   npm.command.run('build', (err) => {
     console.log("Run error: ", err)
-  });
+  })
 
   npm.on('log', function(message) {
-    // log installation progress
-    console.log(message);
-  });
-});
+    //Log installation progress
+    console.log(message)
+  })
+})
