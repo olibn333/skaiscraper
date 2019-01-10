@@ -43,9 +43,14 @@ module.exports = {
         server: { address: 'cluster0-shard-00-01-ywxua.mongodb.net', port: 27017},
         auth: { user: mongoUname, password: mongoPword },
         extraParams: { replicaSet: 'Cluster0-shard-0', ssl: true, authSource: `admin`, retryWrites: true }
-      },
-      
-    }
+      }      
+    },
+    {
+      resolve: `@wapps/gatsby-plugin-material-ui`,
+      options: {
+        // Add any options here
+      }
+    },
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.app/offline
     // 'gatsby-plugin-offline',
