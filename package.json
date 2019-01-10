@@ -1,0 +1,23 @@
+{
+  "name": "server-npm-commands",
+  "version": "1.0.0",
+  "description": "Run npm commands from server, programatically",
+  "main": "npm-commands.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gatsby build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olibn333/skaiscraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olibn333/skaiscraper/issues"
+  },
+  "homepage": "https://github.com/olibn333/skaiscraper#readme",
+  "dependencies": {
+    "npm": "^6.5.0"
+  }
+}

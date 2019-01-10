@@ -28,14 +28,14 @@ export default ({ data }) => {
 }
 
 export const query = graphql`
-  query{
-    allMongodbSkaiScraperreferencedArticles{
-      edges{
-        node{
+  query {
+    allMongodbSkaiScraperreferencedArticles(limit: 10) {
+      edges {
+        node {
           titleText
           commentsUrl
         }
+      }
     }
   }
-}
 `
