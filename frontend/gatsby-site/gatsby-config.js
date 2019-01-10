@@ -48,7 +48,9 @@ module.exports = {
     {
       resolve: `@wapps/gatsby-plugin-material-ui`,
       options: {
-        // Add any options here
+        theme: {
+          primaryColor: '#4f8cef'
+        }
       }
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
