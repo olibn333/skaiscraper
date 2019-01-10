@@ -29,7 +29,7 @@ const articles = ({ data }) => {
                     />
                   </TableCell>
                   <TableCell>
-                    <a href={node.commentsUrl}>{node.titleText}</a>
+                    <a href={node.articleUrl}>{node.titleText}</a>
                   </TableCell>
                 </TableRow>
               ))}
@@ -47,7 +47,7 @@ export const query = graphql`
       edges {
         node {
           titleText
-          commentsUrl
+          articleUrl
           picUrl
         }
       }
