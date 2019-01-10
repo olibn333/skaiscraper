@@ -4,29 +4,59 @@ const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
 const handleDomain = require('./handleDomain')
 
+//Very basic scrape of body text. Needs improving!
 function genericScrape(url) {
   const articleId = uuid()
   const scrapeTimestamp = new Date()
   const domainName = handleDomain.extractRootDomain(url)
   const siteName = domainName.split('.')[0]
 
-  request(url, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
+  return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        //Scrape details with cheerio
+        const $ = cheerio.load(body)
+        const paragraphs = $('p')
+        let bodyText = []
+  
+        paragraphs.each(function (i, element) {
+          const currentParagraph = $(this, element)
+          bodyText.push(currentParagraph.text())
+        })
+        //Return result as object
+        resolve({ scrapeTimestamp, articleId, siteName, 'articleUrl': url, bodyText })
 
-      //Scrape details with cheerio
-      const $ = cheerio.load(body)
-      const paragraphs = $('p')
-      let bodyText = []
-
-      paragraphs.each(function (i, element) {
-        const currentParagraph = $(this, element)
-        bodyText.push(currentParagraph.text())
-      })
-
-      const articleDetails = { scrapeTimestamp, articleId, siteName, 'articleUrl': url, bodyText }
-      mongoStore.sendToDB(articleDetails)
-    }
+      } else if (error) {
+        reject(error)
+      }
+    })
   })
 }
 
-genericScrape('https://www.the-scientist.com/features/can-viruses-in-the-genome-cause-disease--65212')
+//Arbitrary array of article urls
+const sitesToScrape = [
+  'https://www.the-scientist.com/features/can-viruses-in-the-genome-cause-disease--65212',
+  'https://electrek.co/2019/01/05/tesla-autopilot-control-sliding-ice-video/',
+  'https://newatlas.com/hyundai-elevate-walking-car/57865/',
+  'https://www.modernhealthcare.com/article/20190104/NEWS/190109951'
+]
+
+async function scrapeMultipleSites(urls) {
+  let scrapedSitesData = []
+  for (url of urls) {
+    //Await promise to resolve
+    const scrapeData = await genericScrape(url)
+      scrapedSitesData.push(scrapeData)
+    }
+  //console.log(scrapedSitesData)
+  return scrapedSitesData
+}
+
+async function commitToDatabase() {
+  let scrapeResults = await scrapeMultipleSites(sitesToScrape)
+  scrapeResults = { ...scrapeResults }
+  console.log(scrapeResults)
+  mongoStore.sendToDB(scrapeResults)
+}
+
+commitToDatabase()
