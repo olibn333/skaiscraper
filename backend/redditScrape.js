@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const request = require('request')
 const uuid = require('uuid/v1');
 const scrapeResultHandler = require('./scrapeResultHandler')
-const handleDomain = require('./handleDomain')
+const parseUrl = require('./parseUrl')
 
 scrapeInit()
 
@@ -29,8 +29,8 @@ function scrapeInit() {
 function createScrapeResultsObject(url, errorLog, articlesArray, scrapeId) {
 
   const scrapeTimestamp = new Date()
-  const domainName = handleDomain.extractRootDomain(url)
-  const hostName = handleDomain.extractHostname(url)
+  const domainName = parseUrl.extractRootDomain(url)
+  const hostName = parseUrl.extractHostname(url)
   const siteName = domainName.split('.')[0]
 
   //reddit specific:
@@ -43,8 +43,8 @@ function createScrapeResultsObject(url, errorLog, articlesArray, scrapeId) {
 function createArticleObject(url, errorLog, articleDetails) {
 
   const scrapeTimestamp = new Date()
-  const domainName = handleDomain.extractRootDomain(url)
-  const hostName = handleDomain.extractHostname(url)
+  const domainName = parseUrl.extractRootDomain(url)
+  const hostName = parseUrl.extractHostname(url)
   const siteName = domainName.split('.')[0]
 
   //reddit specific:

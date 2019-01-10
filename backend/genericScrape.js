@@ -2,13 +2,13 @@ const cheerio = require('cheerio');
 const request = require('request')
 const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
-const handleDomain = require('./handleDomain')
+const parseUrl = require('./parseUrl')
 
 //Very basic scrape of body text. Needs improving!
 function genericScrape(url) {
   const articleId = uuid()
   const scrapeTimestamp = new Date()
-  const domainName = handleDomain.extractRootDomain(url)
+  const domainName = parseUrl.extractRootDomain(url)
   const siteName = domainName.split('.')[0]
 
   return new Promise(function(resolve, reject) {
@@ -33,6 +33,20 @@ function genericScrape(url) {
   })
 }
 
+async function scrapeMultipleSites(urls) {
+  let scrapedSitesData = []
+  for (url of urls) {
+    console.log("Scraping ", url)
+    //Await promise to resolve
+    const scrapeData = await genericScrape(url)
+    console.log(scrapeData)
+    scrapedSitesData.push(scrapeData)
+    }
+  //console.log(scrapedSitesData)
+  console.log("SCRAPE COMPLETE")
+  return scrapedSitesData
+}
+
 //Arbitrary array of article urls
 const sitesToScrape = [
   'https://www.the-scientist.com/features/can-viruses-in-the-genome-cause-disease--65212',
@@ -41,22 +55,12 @@ const sitesToScrape = [
   'https://www.modernhealthcare.com/article/20190104/NEWS/190109951'
 ]
 
-async function scrapeMultipleSites(urls) {
-  let scrapedSitesData = []
-  for (url of urls) {
-    //Await promise to resolve
-    const scrapeData = await genericScrape(url)
-      scrapedSitesData.push(scrapeData)
-    }
-  //console.log(scrapedSitesData)
-  return scrapedSitesData
-}
-
-async function commitToDatabase() {
+//Working, except not writing to database
+//!!MongoError: docs parameter must be an array of documents
+(async () => {
   let scrapeResults = await scrapeMultipleSites(sitesToScrape)
   scrapeResults = { ...scrapeResults }
-  console.log(scrapeResults)
   mongoStore.sendToDB(scrapeResults)
-}
-
-commitToDatabase()
+})().catch(err => {
+  console.error(err)
+})
