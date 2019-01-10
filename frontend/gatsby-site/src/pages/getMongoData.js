@@ -17,13 +17,17 @@ const articles = ({ data }) => {
           <h1>Articles:</h1>
           <Table>
             <TableHead>
-              <TableRow>
-                <th>Article Comments</th>
-              </TableRow>
             </TableHead>
             <TableBody>
               {data.allMongodbSkaiScraperreferencedArticles.edges.map(({ node }, index) => (
                 <TableRow key={index}>
+                  <TableCell style={{ padding: '24px 4px 4px 4px'}}>
+                    <img
+                      style={{ display: 'block' }}
+                      src={node.picUrl}
+                      alt="Unable to provide description"
+                    />
+                  </TableCell>
                   <TableCell>
                     <a href={node.commentsUrl}>{node.titleText}</a>
                   </TableCell>
@@ -44,6 +48,7 @@ export const query = graphql`
         node {
           titleText
           commentsUrl
+          picUrl
         }
       }
     }
