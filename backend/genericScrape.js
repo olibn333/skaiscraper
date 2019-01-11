@@ -4,6 +4,8 @@ const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
 const parseUrl = require('./parseUrl')
 
+const scrapeId = uuid()
+
 //Very basic scrape of body text. Needs improving!
 function genericScrape(url) {
   const articleId = uuid()
@@ -27,7 +29,9 @@ function genericScrape(url) {
           }
         })
         //Return result as object
-        resolve({ scrapeTimestamp, articleId, siteName, articleTitle, 'articleUrl': url, bodyText })
+        resolve(
+          { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, 'articleUrl': url, bodyText }
+        )
 
       } else if (error) {
         reject(error)
@@ -53,8 +57,9 @@ async function scrapeMultipleSites(urls) {
     articlesArray.push(currentScrapeData)
   }
   const scrapeResultsObject = {
+    'scrapeId': scrapeId,
     'scrapeTimeStamp': articlesArray[0].scrapeTimestamp,
-    'articleCount': articlesArray.length + 1,
+    'articleCount': articlesArray.length,
     'articlesArray': articlesArray
   }
   await asyncSendToDB(scrapeResultsObject)
