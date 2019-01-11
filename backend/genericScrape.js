@@ -16,15 +16,18 @@ function genericScrape(url) {
       if (!error && response.statusCode == 200) {
         //Scrape details with cheerio
         const $ = cheerio.load(body)
+        const articleTitle = $('h1').text()
         const paragraphs = $('p')
         let bodyText = []
   
         paragraphs.each(function (i, element) {
-          const currentParagraph = $(this, element)
-          bodyText.push(currentParagraph.text())
+          const currentParagraph = $(this, element).text()
+          if (currentParagraph.length > 50) {
+            bodyText.push(currentParagraph)
+          }
         })
         //Return result as object
-        resolve({ scrapeTimestamp, articleId, siteName, 'articleUrl': url, bodyText })
+        resolve({ scrapeTimestamp, articleId, siteName, articleTitle, 'articleUrl': url, bodyText })
 
       } else if (error) {
         reject(error)
@@ -33,7 +36,7 @@ function genericScrape(url) {
   })
 }
 
-//Async to send multiple single documents in a row
+//Promise test
 function asyncSendToDB(data) {
   return new Promise(function(resolve, reject) {
     resolve(mongoStore.sendToDB(data))
