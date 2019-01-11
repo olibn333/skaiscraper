@@ -3,6 +3,7 @@ const request = require('request')
 const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
 const parseUrl = require('./parseUrl')
+const headline_parser = require("headline-parser");
 
 const scrapeId = uuid()
 
@@ -28,9 +29,13 @@ function genericScrape(url) {
             bodyText.push(currentParagraph)
           }
         })
+
+        //Find keywords from title and body
+        const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
+        
         //Return result as object
         resolve(
-          { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, 'articleUrl': url, bodyText }
+          { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
         )
 
       } else if (error) {
