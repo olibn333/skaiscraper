@@ -1,3 +1,42 @@
+const request = require('request')
+
+function getHTML(url) {
+  return new Promise(resolve => {
+    request(url, function (error, response, body) {
+      try {
+        if (error) {
+          resolve(error)
+        }
+        else if (!error && response.statusCode == 200) {
+          resolve(body)
+        }
+      } catch (e) {
+        resolve(e)
+      }
+    })
+  })
+}
+
+function extractUrlDetails(url) {
+  //Following this format: scheme://host:port/path?query
+  const hostName = extractHostname(url)
+  const rootDomain = extractRootDomain(url)
+  const siteName = rootDomain.split('.')[0]
+  const sitePathAndQuery = url.split(hostName)[1]
+  //let sitePath, siteQuery
+  if (sitePathAndQuery.indexOf('?') > -1) {
+    sitePath = sitePathAndQuery.split('?')[0]
+    siteQuery = sitePathAndQuery.split('?')[1]
+  }
+  else{
+    sitePath = sitePathAndQuery
+    siteQuery = ''
+  }
+    
+  return {url, hostName, rootDomain, siteName, sitePath, siteQuery}
+}
+
+
 //Ripped ruthlessly from https://stackoverflow.com/questions/8498592/extract-hostname-name-from-string
 function extractHostname(url) {
   let hostname;
@@ -37,4 +76,5 @@ const extractRootDomain = (url) => {
   return domain;
 }
 
-module.exports = { extractRootDomain, extractHostname }
+
+module.exports = { getHTML, extractRootDomain, extractHostname, extractUrlDetails }
