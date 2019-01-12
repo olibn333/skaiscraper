@@ -68,6 +68,7 @@ async function scrapeMultipleSites(urls) {
   return articlesArray
 }
 
+
 //Arbitrary array of article urls
 const sitesToScrape = [
   'https://www.the-scientist.com/features/can-viruses-in-the-genome-cause-disease--65212',

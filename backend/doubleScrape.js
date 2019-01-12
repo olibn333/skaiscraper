@@ -22,7 +22,7 @@ async function scrapeInit() {
 
   //Slot details into scrape object
   articleDetails.map((article,i) => {
-    Object.assign(scrapeObj.articlesArray[i], article)
+    scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], article)
   })
 
   //Send to DB
