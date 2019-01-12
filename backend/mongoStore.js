@@ -47,21 +47,31 @@ function sendToMongoDB(username, password, file) {
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err
     console.log("Database Connected!")
-    const dbo = db.db('skaiScraper-referenced')
+    const dbo = db.db('testing') //skaiScraper-referenced
 
     return new Promise(function (resolve, reject) {
       //Insert Scrape Object
-      dbo.collection('scrapes').insertOne(scrapeObject, function (err, res) {
-        if (err) throw err
-        console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
-      })
+      try {
+        dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
+          if (error) throw error
+          console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
+        })
+      } catch (error) {
+        console.log("sendToMongoDB: failed at insertOne", error)
+      }
 
       //Insert Articles Array
-      dbo.collection('articles').insertMany(articlesArray, function (err, res) {
-        if (err) throw err
-        console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-      })
+      try {
+        dbo.collection('articles').insertMany(articlesArray, function (err, res) {
+          if (err) throw err
+          console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+        })
+      } catch (error) {
+        console.log("sendToMongoDB: failed at insertMany", error)
+      }
+      
       resolve(db.close())
+      reject(console.log("sendToMongoDB failed to resolve!"))
     })
   });
 }

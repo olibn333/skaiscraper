@@ -8,7 +8,8 @@ const headline_parser = require("headline-parser");
 const scrapeId = uuid()
 
 //Very basic scrape of body text. Needs improving!
-function genericScrape(url) {
+function genericScrape(url, returnOnly) {
+  console.log("i'm being called")
   const articleId = uuid()
   const scrapeTimestamp = new Date()
   const domainName = parseUrl.extractRootDomain(url)
@@ -23,7 +24,7 @@ function genericScrape(url) {
         const paragraphs = $('p')
         let bodyText = []
   
-        paragraphs.each(function (i, element) {
+        paragraphs.each(function(i, element) {
           const currentParagraph = $(this, element).text()
           if (currentParagraph.length > 50) {
             bodyText.push(currentParagraph)
@@ -35,11 +36,13 @@ function genericScrape(url) {
         
         //Return result as object
         resolve(
-          { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
+          (returnOnly === 'bodyText')
+            ? bodyText
+            :  { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
         )
 
       } else if (error) {
-        reject(error)
+        reject(console.log("genericScrape failed to resolve!", error))
       }
     })
   })
@@ -79,7 +82,7 @@ const sitesToScrape = [
 ]
 
 //Initiate scrape
-scrapeMultipleSites(sitesToScrape)
+//scrapeMultipleSites(sitesToScrape)
 
 
 // THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED
@@ -90,3 +93,5 @@ scrapeMultipleSites(sitesToScrape)
 // })().catch(err => {
 //   console.error(err)
 // })
+
+module.exports.fetch = genericScrape

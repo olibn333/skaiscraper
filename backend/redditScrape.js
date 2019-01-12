@@ -3,6 +3,7 @@ const request = require('request')
 const uuid = require('uuid/v1');
 const scrapeResultHandler = require('./scrapeResultHandler')
 const parseUrl = require('./parseUrl')
+const genericScrape = require('./genericScrape')
 
 scrapeInit()
 
@@ -54,7 +55,7 @@ function createArticleObject(url, errorLog, articleDetails) {
   return Object.assign(articleDetails, { 'sourceUrl': url, errorLog})
 }
 
-function getRedditArticlesFromSubreddit(url) {
+async function getRedditArticlesFromSubreddit(url) {
 
   //Error log as object
   let errorLog = {
@@ -73,7 +74,7 @@ function getRedditArticlesFromSubreddit(url) {
       const $ = cheerio.load(body)
       const articles = $('article')
 
-      articles.each(function (i, element) {
+      articles.each(async function (i, element) {
 
         let titleEl, titleText, commentsUrl, picUrl, articleUrl
 
@@ -104,18 +105,23 @@ function getRedditArticlesFromSubreddit(url) {
         //Article Id
         articleId = scrapeId + "-" + i
 
-        //Process
-        const articleDetails = { articleId, titleText, commentsUrl, picUrl, articleUrl }
+        //Fetch article body text
+        try {
+          await genericScrape
+            .fetch(encodeURI(articleUrl), 'bodyText')
+            .then(function(response) {
+              //Process
+              const articleDetails = { articleId, titleText, commentsUrl, picUrl, articleUrl, 'bodyText': response }
+              
+              globalErrorLog.errorCount += errorLog.errorCount
 
-        globalErrorLog.errorCount += errorLog.errorCount
+              const articleObject = createArticleObject(url, errorLog, articleDetails)
 
-        // scrapeResultsObject.articlesArray.push(articleDetails)
-        // scrapeResultsObject.errorLog = errorLog
-
-        const articleObject = createArticleObject(url, errorLog, articleDetails)
-
-        articlesArray.push(articleObject)
-        
+              articlesArray.push(articleObject)
+            })
+        } catch (error) {
+          console.log("redditScrape: genericScrape failed to fetch " + articleUrl)
+        }
       })
 
       //callback
