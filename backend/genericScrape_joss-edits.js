@@ -35,14 +35,14 @@ function genericScrape(url, returnOnly) {
         const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
         
         //Return result as object
-        // resolve(
-        //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
-        // )
+        resolve(
+          (returnOnly === 'bodyText')
+            ? bodyText
+            :  { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
+        )
 
-        resolve({articleTitle, keywords, bodyText})
-
-      } else {
-        resolve(error + response.statusCode)
+      } else if (error) {
+        reject(console.log("genericScrape failed to resolve!", error))
       }
     })
   })
@@ -79,8 +79,6 @@ const sitesToScrape = [
 
 //Initiate scrape
 //scrapeMultipleSites(sitesToScrape)
-
-module.exports = {scrapeMultipleSites, genericScrape}
 
 
 // THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED
