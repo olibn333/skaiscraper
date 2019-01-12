@@ -34,12 +34,14 @@ function genericScrape(url) {
         const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
         
         //Return result as object
-        resolve(
-          { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
-        )
+        // resolve(
+        //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
+        // )
 
-      } else if (error) {
-        reject(error)
+        resolve({articleTitle, keywords, bodyText})
+
+      } else {
+        resolve(error + response.statusCode)
       }
     })
   })
@@ -55,19 +57,15 @@ function asyncSendToDB(data) {
 async function scrapeMultipleSites(urls) {
   let articlesArray = []
   for (url of urls) {
+    //Sanitise url
+    url = url.replace('‘','').replace('’','')
     console.log("Scraping ", url)
     //Await promise to resolve
     const currentScrapeData = await genericScrape(url)
-    console.log(currentScrapeData)
+    //console.log(currentScrapeData)
     articlesArray.push(currentScrapeData)
   }
-  const scrapeResultsObject = {
-    'scrapeId': scrapeId,
-    'scrapeTimeStamp': articlesArray[0].scrapeTimestamp,
-    'articleCount': articlesArray.length,
-    'articlesArray': articlesArray
-  }
-  await asyncSendToDB(scrapeResultsObject)
+  return articlesArray
 }
 
 //Arbitrary array of article urls
@@ -79,7 +77,9 @@ const sitesToScrape = [
 ]
 
 //Initiate scrape
-scrapeMultipleSites(sitesToScrape)
+//scrapeMultipleSites(sitesToScrape)
+
+module.exports = {scrapeMultipleSites, genericScrape}
 
 
 // THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED

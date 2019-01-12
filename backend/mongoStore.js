@@ -47,7 +47,7 @@ function sendToMongoDB(username, password, file) {
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err
     console.log("Database Connected!")
-    const dbo = db.db('skaiScraper-referenced')
+    const dbo = db.db('skaiScraper-referenced2')
 
     return new Promise(function (resolve, reject) {
       //Insert Scrape Object
