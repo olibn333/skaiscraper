@@ -9,7 +9,6 @@ const scrapeId = uuid()
 
 //Very basic scrape of body text. Needs improving!
 function genericScrape(url, returnOnly) {
-  console.log("i'm being called")
   const articleId = uuid()
   const scrapeTimestamp = new Date()
   const domainName = parseUrl.extractRootDomain(url)
@@ -39,10 +38,10 @@ function genericScrape(url, returnOnly) {
         //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
         // )
 
-        resolve({articleTitle, keywords, bodyText})
+        resolve({ articleTitle, keywords, bodyText })
 
       } else {
-        resolve(error + response.statusCode)
+        reject(console.log("Error at genericScrape: " + error + response.statusCode))
       }
     })
   })
@@ -81,9 +80,6 @@ const sitesToScrape = [
 //Initiate scrape
 //scrapeMultipleSites(sitesToScrape)
 
-module.exports = {scrapeMultipleSites, genericScrape}
-
-
 // THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED
 // (async () => {
 //   let scrapeResults = await scrapeMultipleSites(sitesToScrape)
@@ -93,4 +89,4 @@ module.exports = {scrapeMultipleSites, genericScrape}
 //   console.error(err)
 // })
 
-module.exports.fetch = genericScrape
+module.exports = { scrapeMultipleSites, genericScrape }

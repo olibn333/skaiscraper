@@ -18,4 +18,4 @@ function createScrapeResultsObject(url) {
   return scrapeResultsObject
 }
 
-module.exports = {createScrapeResultsObject}
+module.exports = { createScrapeResultsObject }
