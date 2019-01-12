@@ -14,36 +14,33 @@ function genericScrape(url, returnOnly) {
   const domainName = parseUrl.extractRootDomain(url)
   const siteName = domainName.split('.')[0]
 
-  return new Promise(function(resolve, reject) {
-    request(url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        //Scrape details with cheerio
-        const $ = cheerio.load(body)
-        const articleTitle = $('h1').text()
-        const paragraphs = $('p')
-        let bodyText = []
-  
-        paragraphs.each(function(i, element) {
-          const currentParagraph = $(this, element).text()
-          if (currentParagraph.length > 50) {
-            bodyText.push(currentParagraph)
-          }
-        })
+  return new Promise(async function(resolve, reject) {
 
-        //Find keywords from title and body
-        const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
-        
-        //Return result as object
-        // resolve(
-        //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
-        // )
+    //Scrape details with cheerio
+    const html = await parseUrl.getHTML(url)
+    const $ = cheerio.load(html)
+    const articleTitle = $('h1').text()
+    const paragraphs = $('p')
+    let bodyText = []
 
-        resolve({ articleTitle, keywords, bodyText })
-
-      } else {
-        reject(console.log("Error at genericScrape: " + error + response.statusCode))
+    paragraphs.each(function(i, element) {
+      const currentParagraph = $(this, element).text()
+      if (currentParagraph.length > 50) {
+        bodyText.push(currentParagraph)
       }
     })
+
+    //Find keywords from title and body
+    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
+    
+    //Return result as object
+    // resolve(
+    //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
+    // )
+
+    resolve({ articleTitle, keywords, bodyText })
+
+    reject(console.log("genericScrape failed to resolve!"))
   })
 }
 
