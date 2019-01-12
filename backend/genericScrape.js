@@ -42,7 +42,7 @@ function genericScrape(url, returnOnly) {
 
     resolve({ articleTitle, keywords, bodyText })
 
-    reject(console.log("genericScrape failed to resolve!"))
+    reject("Something went wrong in genericScrape..")
   })
 }
 
@@ -60,7 +60,7 @@ async function scrapeMultipleSites(urls) {
     url = url.replace('‘','').replace('’','')
     console.log("Scraping ", url)
     //Await promise to resolve
-    const currentScrapeData = await genericScrape(url)
+    const currentScrapeData = await genericScrape(url).catch(error => console.log(error))
     //console.log(currentScrapeData)
     articlesArray.push(currentScrapeData)
   }

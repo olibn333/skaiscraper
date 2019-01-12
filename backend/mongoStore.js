@@ -49,29 +49,21 @@ function sendToMongoDB(username, password, file) {
     console.log("Database Connected!")
     const dbo = db.db('testing') //skaiScraper-referenced
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
+      let taskComplete = 0
+
       //Insert Scrape Object
-      try {
-        dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
-          if (error) throw error
-          console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
-        })
-      } catch (error) {
-        console.log("sendToMongoDB: failed at insertOne", error)
-      }
+      await dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
+        if (error) throw error
+        console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
+      })
 
       //Insert Articles Array
-      try {
-        dbo.collection('articles').insertMany(articlesArray, function (err, res) {
-          if (err) throw err
-          console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-        })
-      } catch (error) {
-        console.log("sendToMongoDB: failed at insertMany", error)
-      }
-      
+      await dbo.collection('articles').insertMany(articlesArray, function (err, res) {
+        if (err) throw err
+        console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+      })
       resolve(db.close())
-      reject(console.log("sendToMongoDB failed to resolve!"))
     })
   });
 }
