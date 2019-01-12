@@ -23,6 +23,8 @@ function genericScrape(url, returnOnly) {
     const paragraphs = $('p')
     let bodyText = []
 
+    console.log(articleTitle)
+
     paragraphs.each(function(i, element) {
       const currentParagraph = $(this, element).text()
       if (currentParagraph.length > 50) {

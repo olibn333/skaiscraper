@@ -11,6 +11,7 @@ async function scrapeInit() {
 
   //Get Articles from Subreddit
   const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url)
+    .catch(error => console.log("redditScrape.getRedditArticlesFromSubreddit failed to complete!", error))
   console.log(articlesArrayObj.articlesArray.length + " articles scraped with " + articlesArrayObj.errorLog.errorCount + " details not found.")
   
   //Slot articles into scrape object

@@ -1,6 +1,6 @@
 const cheerio = require('cheerio');
 const parseUrl = require('./parseUrl')
-const genericScrape = require('./genericScrape')
+
 
 //Checks if query returns undefined
 function checkUndefined(query) {
@@ -12,6 +12,7 @@ function checkUndefined(query) {
   }
 }
 
+// Creates an ArticlesArray and ErrorLog
 async function getRedditArticlesFromSubreddit(url) {
 
   //Load cheerio with HTML
@@ -28,7 +29,7 @@ async function getRedditArticlesFromSubreddit(url) {
   //Scrape details with cheerio
   const articles = $('article')
 
-  articles.each(async function (i, element) {
+  articles.each(function (i, element) {
 
     let titleEl, titleText, commentsUrl, picUrl, articleUrl, commentsCount, votesCount
 
@@ -65,24 +66,12 @@ async function getRedditArticlesFromSubreddit(url) {
     //Votes
     votesCount = $(element).parent().siblings().eq(0).text()
 
-    //Fetch article body text
-    try {
-      await genericScrape.fetch(encodeURI(articleUrl), 'bodyText')
-        .then(function(response) {
-          //Process
-          const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount, 'bodyText': response }
-          
-          globalErrorLog.errorCount += errorLog.errorCount
+    //Process
+    const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
+    articlesArray.push(articleDetails)
 
-          const articleObject = createArticleObject(url, errorLog, articleDetails)
-
-          articlesArray.push(articleObject)
-        })
-    } catch (error) {
-      console.log("redditScrape: genericScrape failed to fetch " + articleUrl)
-    }
   })
-  return { articlesArray, errorLog }
+  return {articlesArray, errorLog}
 }
 
-module.exports = { getRedditArticlesFromSubreddit }
+module.exports = {getRedditArticlesFromSubreddit}
