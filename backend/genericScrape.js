@@ -33,14 +33,14 @@ function genericScrape(url, returnOnly) {
     })
 
     //Find keywords from title and body
-    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
+    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['no keywords']
     
     //Return result as object
     // resolve(
     //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
     // )
 
-    console.log("Got", bodyText.length, "paras with keywords:", keywords.join(' '))
+    console.log("Got", bodyText.length, "paras with keywords:", keywords)
     resolve({ articleTitle, keywords, bodyText })
 
     reject("Something went wrong in genericScrape..")

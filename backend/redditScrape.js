@@ -21,7 +21,7 @@ function checkUndefined(query) {
 async function getRedditArticlesFromSubreddit(url) {
 
   //Load cheerio with HTML
-  const html = parseUrl.getHTML(url)
+  const html = await parseUrl.getHTML(url)
   const $ = cheerio.load(html)
 
 
