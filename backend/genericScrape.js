@@ -1,7 +1,10 @@
 const cheerio = require('cheerio');
 const mongoStore = require('./mongoStore')
 const parseUrl = require('./parseUrl')
-const headline_parser = require("headline-parser");
+const headline_parser = require('headline-parser');
+const scrapeTools = require('./genericScrapeTools')
+
+const errorLog = new scrapeTools.errorLog
 
 //Very basic scrape of body text. Needs improving!
 function genericScrape(url) {
@@ -14,8 +17,9 @@ function genericScrape(url) {
     const $ = cheerio.load(html)
 
     //Article details
-    const articleTitle = $('h1').text()
-    const siteLogo = $('header img').attr('src')
+    const articleTitle = errorLog.checkUndefined($('h1').text())
+    const siteLogo = errorLog.checkUndefined($('header img').attr('src'))
+    if (siteLogo == "Not found") console.log("Failed to get site logo from " + parseUrl.extractHostname(url))
     
     //Get body text
     let bodyText = []
@@ -30,11 +34,6 @@ function genericScrape(url) {
 
     //Find keywords from title and body
     const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['no keywords']
-    
-    //Return result as object
-    // resolve(
-    //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
-    // )
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
     resolve({ articleTitle, siteLogo, keywords, bodyText })
