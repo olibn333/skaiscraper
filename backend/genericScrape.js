@@ -23,10 +23,10 @@ function genericScrape(url, returnOnly) {
     const paragraphs = $('p')
     let bodyText = []
 
-    console.log(articleTitle)
+    //console.log(articleTitle)
 
     paragraphs.each(function(i, element) {
-      const currentParagraph = $(this, element).text()
+      const currentParagraph = $(element).text()
       if (currentParagraph.length > 50) {
         bodyText.push(currentParagraph)
       }
@@ -40,6 +40,7 @@ function genericScrape(url, returnOnly) {
     //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
     // )
 
+    console.log("Got", bodyText.length, "paras with keywords:", keywords.join(' '))
     resolve({ articleTitle, keywords, bodyText })
 
     reject("Something went wrong in genericScrape..")

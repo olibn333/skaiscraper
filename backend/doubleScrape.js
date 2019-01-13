@@ -10,8 +10,7 @@ async function scrapeInit() {
   console.log("Scraping " + url + "...")
 
   //Get Articles from Subreddit
-  const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url)
-    .catch(error => console.log("redditScrape.getRedditArticlesFromSubreddit failed to complete!", error))
+  const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url).catch(error => console.log("redditScrape.getRedditArticlesFromSubreddit failed to complete!", error))
   console.log(articlesArrayObj.articlesArray.length + " articles scraped with " + articlesArrayObj.errorLog.errorCount + " details not found.")
   
   //Slot articles into scrape object
@@ -19,7 +18,7 @@ async function scrapeInit() {
 
   //Use genericScrape to get details of articles
   const articleUrls = scrapeObj.articlesArray.map((article) => article.articleUrl)
-  const articleDetails = await genericScrape.scrapeMultipleSites(articleUrls)
+  const articleDetails = await genericScrape.scrapeMultipleSites(articleUrls).catch(error => console.log(error))
 
   //Slot details into scrape object
   articleDetails.map((article,i) => {
