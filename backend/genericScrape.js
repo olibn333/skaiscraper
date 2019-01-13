@@ -18,7 +18,11 @@ function genericScrape(url) {
 
     //Article details
     const articleTitle = errorLog.checkUndefined($('h1').text())
-    const siteLogo = errorLog.checkUndefined($('header img').attr('src'))
+    //Get site logo
+    let siteLogo = errorLog.checkUndefined($('header img').attr('src'))
+    if (!parseUrl.validUrl.isUri(siteLogo)) {
+      siteLogo = "Not found"
+    }
     if (siteLogo == "Not found") console.log("Failed to get site logo from " + parseUrl.extractHostname(url))
     
     //Get body text

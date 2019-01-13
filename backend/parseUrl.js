@@ -1,4 +1,5 @@
 const request = require('request')
+const validUrl = require('valid-url')
 
 function getHTML(url) {
   return new Promise(resolve => {
@@ -77,4 +78,4 @@ const extractRootDomain = (url) => {
 }
 
 
-module.exports = { getHTML, extractRootDomain, extractHostname, extractUrlDetails }
+module.exports = { getHTML, extractRootDomain, extractHostname, extractUrlDetails, validUrl }
