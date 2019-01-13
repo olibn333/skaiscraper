@@ -18,4 +18,18 @@ function createScrapeResultsObject(url) {
   return scrapeResultsObject
 }
 
-module.exports = { createScrapeResultsObject }
+class errorLog {
+  constructor() {
+    this.errorCount = 0
+  }
+  checkUndefined(query) {
+    if (query === undefined) {
+      this.errorCount += 1
+      return "Not found"
+    } else {
+      return query
+    }
+  }
+}
+
+module.exports = { createScrapeResultsObject, errorLog }

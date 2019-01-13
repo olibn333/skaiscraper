@@ -1,29 +1,25 @@
 const cheerio = require('cheerio');
-const request = require('request')
-const uuid = require('uuid/v1');
 const mongoStore = require('./mongoStore')
 const parseUrl = require('./parseUrl')
 const headline_parser = require("headline-parser");
 
-const scrapeId = uuid()
-
 //Very basic scrape of body text. Needs improving!
-function genericScrape(url, returnOnly) {
-  const articleId = uuid()
-  const scrapeTimestamp = new Date()
+function genericScrape(url) {
   const domainName = parseUrl.extractRootDomain(url)
-  const siteName = domainName.split('.')[0]
 
   return new Promise(async function(resolve, reject) {
 
     //Scrape details with cheerio
     const html = await parseUrl.getHTML(url)
     const $ = cheerio.load(html)
-    const articleTitle = $('h1').text()
-    const paragraphs = $('p')
-    let bodyText = []
 
-    //console.log(articleTitle)
+    //Article details
+    const articleTitle = $('h1').text()
+    const siteLogo = $('header img').attr('src')
+    
+    //Get body text
+    let bodyText = []
+    const paragraphs = $('p')
 
     paragraphs.each(function(i, element) {
       const currentParagraph = $(element).text()
@@ -41,7 +37,7 @@ function genericScrape(url, returnOnly) {
     // )
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    resolve({ articleTitle, keywords, bodyText })
+    resolve({ articleTitle, siteLogo, keywords, bodyText })
 
     reject("Something went wrong in genericScrape..")
   })

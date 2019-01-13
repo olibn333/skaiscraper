@@ -1,21 +1,8 @@
 const cheerio = require('cheerio');
 const parseUrl = require('./parseUrl')
+const scrapeTools = require('./genericScrapeTools')
 
-
-//Scrape level errors
-const errorLog = {
-  errorCount: 0
-}
-
-//Checks if query returns undefined
-function checkUndefined(query) {
-  if (query === undefined) {
-    errorLog.errorCount += 1
-    return "Not found"
-  } else {
-    return query
-  }
-}
+const redditErrors = new scrapeTools.errorLog
 
 // Creates an ArticlesArray and ErrorLog
 async function getRedditArticlesFromSubreddit(url) {
@@ -23,7 +10,6 @@ async function getRedditArticlesFromSubreddit(url) {
   //Load cheerio with HTML
   const html = await parseUrl.getHTML(url)
   const $ = cheerio.load(html)
-
 
   let articlesArray = []
 
@@ -36,10 +22,10 @@ async function getRedditArticlesFromSubreddit(url) {
 
     //Title
     titleEl = $('a h2', element)
-    titleText = checkUndefined(titleEl.text())
+    titleText = redditErrors.checkUndefined(titleEl.text())
 
     //Reddit URL
-    commentsUrl = checkUndefined(titleEl.parent().attr('href'))
+    commentsUrl = redditErrors.checkUndefined(titleEl.parent().attr('href'))
     if (commentsUrl !== "Not Found") {
       commentsUrl = url.split('/r/')[0] + commentsUrl
     }
@@ -52,11 +38,11 @@ async function getRedditArticlesFromSubreddit(url) {
     }
     catch (e) {
       picUrl = "Not Found"
-      errorLog.errorCount += 1
+      redditErrors.errorCount += 1
     }
 
     //Article URL
-    articleUrl = checkUndefined($('div a', element).eq(4).attr('href'))
+    articleUrl = redditErrors.checkUndefined($('div a', element).eq(4).attr('href'))
 
     //Article Index
     articleIndex = i
@@ -72,7 +58,7 @@ async function getRedditArticlesFromSubreddit(url) {
     articlesArray.push(articleDetails)
 
   })
-  return { articlesArray, errorLog }
+  return { articlesArray, 'errorCount': redditErrors.errorCount }
 }
 
 module.exports = { getRedditArticlesFromSubreddit }
