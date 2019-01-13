@@ -2,12 +2,12 @@ const readline = require('readline');
 const MongoClient = require('mongodb').MongoClient;
 
 
-async function sendToDB(file) {
+function sendToDB(file) {
   try {
     const creds = require('../skai-config')
     uname = creds.username
     pword = creds.password
-    await sendToMongoDB(uname, pword, file)
+    sendToMongoDB(uname, pword, file)
   }
   catch (e) {
     console.log("No local config file found. Please enter username and password:")
@@ -49,23 +49,22 @@ function sendToMongoDB(username, password, file) {
     console.log("Database Connected!")
     const dbo = db.db('testing') //skaiScraper-referenced
 
-    return new Promise(async function (resolve, reject) {
-      let taskComplete = 0
+    // return new Promise(async function (resolve, reject) {
+    //   let taskComplete = 0
 
-      //Insert Scrape Object
-      await dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
-        if (error) throw error
-        console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
-      })
-
-      //Insert Articles Array
-      await dbo.collection('articles').insertMany(articlesArray, function (err, res) {
-        if (err) throw err
-        console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-      })
-      resolve(db.close())
+    //Insert Scrape Object
+    dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
+       if (error) throw error
+      console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
     })
-  });
+
+    //Insert Articles Array
+    dbo.collection('articles').insertMany(articlesArray, function (err, res) {
+      // if (err) throw err
+      console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+    })
+    db.close()
+  })
 }
 
 module.exports = { sendToDB }

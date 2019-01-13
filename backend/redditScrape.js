@@ -2,6 +2,11 @@ const cheerio = require('cheerio');
 const parseUrl = require('./parseUrl')
 
 
+//Scrape level errors
+const errorLog = {
+  errorCount: 0
+}
+
 //Checks if query returns undefined
 function checkUndefined(query) {
   if (query === undefined) {
@@ -19,10 +24,6 @@ async function getRedditArticlesFromSubreddit(url) {
   const html = await parseUrl.getHTML(url)
   const $ = cheerio.load(html)
 
-  //Shell objects
-  const errorLog = {
-    errorCount: 0
-  }
 
   let articlesArray = []
 
@@ -71,7 +72,7 @@ async function getRedditArticlesFromSubreddit(url) {
     articlesArray.push(articleDetails)
 
   })
-  return {articlesArray, errorLog}
+  return { articlesArray, errorLog }
 }
 
-module.exports = {getRedditArticlesFromSubreddit}
+module.exports = { getRedditArticlesFromSubreddit }

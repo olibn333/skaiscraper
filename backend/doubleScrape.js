@@ -18,7 +18,7 @@ async function scrapeInit() {
 
   //Use genericScrape to get details of articles
   const articleUrls = scrapeObj.articlesArray.map((article) => article.articleUrl)
-  const articleDetails = await genericScrape.scrapeMultipleSites(articleUrls)
+  const articleDetails = await genericScrape.scrapeMultipleSites(articleUrls).catch(error => console.log(error))
 
   //Slot details into scrape object
   articleDetails.map((article,i) => {

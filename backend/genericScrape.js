@@ -23,23 +23,24 @@ function genericScrape(url, returnOnly) {
     const paragraphs = $('p')
     let bodyText = []
 
-    console.log(articleTitle)
+    //console.log(articleTitle)
 
     paragraphs.each(function(i, element) {
-      const currentParagraph = $(this, element).text()
+      const currentParagraph = $(element).text()
       if (currentParagraph.length > 50) {
         bodyText.push(currentParagraph)
       }
     })
 
     //Find keywords from title and body
-    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3)
+    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['no keywords']
     
     //Return result as object
     // resolve(
     //   { scrapeId, scrapeTimestamp, articleId, siteName, articleTitle, keywords, 'articleUrl': url, bodyText }
     // )
 
+    console.log("Got", bodyText.length, "paras with keywords:", keywords)
     resolve({ articleTitle, keywords, bodyText })
 
     reject("Something went wrong in genericScrape..")
