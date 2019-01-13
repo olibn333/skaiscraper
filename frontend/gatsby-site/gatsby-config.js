@@ -4,9 +4,9 @@ const mongoPword = creds.password
 
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `skAIscraper™`,
+    description: `Evolve beyond.`,
+    author: `Oli and Joss`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -49,7 +49,7 @@ module.exports = {
       resolve: `@wapps/gatsby-plugin-material-ui`,
       options: {
         theme: {
-          primaryColor: '#4f8cef'
+          primaryColor: 'dodgerblue'
         }
       }
     },

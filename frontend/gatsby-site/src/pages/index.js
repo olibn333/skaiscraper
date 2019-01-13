@@ -10,7 +10,12 @@ const IndexPage = ({data}) => (
     <SEO title="Home" keywords={[`gatsby`, `application`, `react`]} />
     <h1>SkaiScraper</h1>
     <p>Welcome to SkaiScraper.</p>
-    <Link to="/getMongoData/">OPEN ARTICLES</Link>
+    <div>
+      <Link to="/getMongoData/">OPEN ARTICLES</Link>
+    </div>
+    <div>
+      <Link to="/test/">TEST PAGE</Link>
+    </div>
     <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
       <Image />
     </div>
