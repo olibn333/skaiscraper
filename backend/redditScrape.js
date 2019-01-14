@@ -72,4 +72,20 @@ function convertToInt(string) {
   }
 }
 
+async function getSubredditsFromSearch(searchStr){
+  const url = 'https://www.reddit.com/search?q=' + searchStr
+  const html = await parseUrl.getHTML(url).catch(e=>console.log(e))
+  const $ = cheerio.load(html)
+  let allLinks = []
+
+  $('a').each((i,el) => allLinks[i] = el.attribs['href'])
+
+  const allSubreddits = allLinks.filter(link => link.indexOf('/r/')>-1)
+
+  console.log(allSubreddits)
+
+}
+
+//getSubredditsFromSearch('artificial')
+
 module.exports = { getRedditArticlesFromSubreddit }
