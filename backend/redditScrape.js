@@ -48,10 +48,12 @@ async function getRedditArticlesFromSubreddit(url) {
     articleIndex = i
 
     //Comments Number
-    commentsCount = $(element).next().find('div > a > span').text().split('comment')[0]
+    commentsCount = redditErrors.checkUndefined($(element).next().find('div > a > span').text().split('comment')[0])
+    commentsCount = convertToInt(commentsCount)
 
     //Votes
-    votesCount = $(element).parent().siblings().eq(0).text()
+    votesCount = redditErrors.checkUndefined($(element).parent().siblings().eq(0).text())
+    votesCount = convertToInt(votesCount)
 
     //Process
     const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
@@ -59,6 +61,15 @@ async function getRedditArticlesFromSubreddit(url) {
 
   })
   return { articlesArray, 'errorCount': redditErrors.errorCount }
+}
+
+function convertToInt(string) {
+  if (string.indexOf('k') > 0) {
+    return parseFloat(string.trim()) * 1000
+  }
+  else {
+    return parseInt(string.trim())
+  }
 }
 
 module.exports = { getRedditArticlesFromSubreddit }
