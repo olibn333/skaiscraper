@@ -27,15 +27,13 @@ function genericScrape(url) {
       })
     })
 
-    let siteLogo
-
-    getLogo.then((images) => {
+    const siteLogo = getLogo.then((images) => {
+      console.log("SITE LOGO IS.....", images.icon)
       if (images.openGraph) {
-        siteLogo = images.openGraph
+        return images.openGraph
       } else {
-        siteLogo = images.icon
+        return images.icon
       }
-      console.log("SITE LOGO IS.....", siteLogo)
     }).catch(error => console.log("IT FUCKED UP", error))
 
     // const getLogo = async (url) => {

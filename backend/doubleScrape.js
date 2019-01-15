@@ -23,6 +23,8 @@ async function scrapeInit() {
   const articleUrls = scrapeObj.articlesArray.map((article) => article.articleUrl)
   const articleDetails = await genericScrape.scrapeMultipleSites(articleUrls).catch(error => console.log(error))
 
+  console.log(articleDetails)
+
   //Slot details into scrape object
   articleDetails.map((article,i) => {
     scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], article)
