@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const parseUrl = require('./parseUrl')
 const scrapeTools = require('./genericScrapeTools')
 
-const redditErrors = new scrapeTools.errorLog
+const errorLog = new scrapeTools.errorLog
 
 // Creates an ArticlesArray and ErrorLog
 async function getRedditArticlesFromSubreddit(url) {
@@ -22,10 +22,10 @@ async function getRedditArticlesFromSubreddit(url) {
 
     //Title
     titleEl = $('a h2', element)
-    titleText = redditErrors.checkUndefined(titleEl.text())
+    titleText = errorLog.checkUndefined(titleEl.text())
 
     //Reddit URL
-    commentsUrl = redditErrors.checkUndefined(titleEl.parent().attr('href'))
+    commentsUrl = errorLog.checkUndefined(titleEl.parent().attr('href'))
     if (commentsUrl !== "Not Found") {
       commentsUrl = url.split('/r/')[0] + commentsUrl
     }
@@ -38,21 +38,21 @@ async function getRedditArticlesFromSubreddit(url) {
     }
     catch (e) {
       picUrl = "Not Found"
-      redditErrors.errorCount += 1
+      errorLog.errorCount += 1
     }
 
     //Article URL
-    articleUrl = redditErrors.checkUndefined($('div a', element).eq(4).attr('href'))
+    articleUrl = errorLog.checkUndefined($('div a', element).eq(4).attr('href'))
 
     //Article Index
     articleIndex = i
 
     //Comments Number
-    commentsCount = redditErrors.checkUndefined($(element).next().find('div > a > span').text().split('comment')[0])
+    commentsCount = errorLog.checkUndefined($(element).next().find('div > a > span').text().split('comment')[0])
     commentsCount = convertToInt(commentsCount)
 
     //Votes
-    votesCount = redditErrors.checkUndefined($(element).parent().siblings().eq(0).text())
+    votesCount = errorLog.checkUndefined($(element).parent().siblings().eq(0).text())
     votesCount = convertToInt(votesCount)
 
     //Process
@@ -60,7 +60,7 @@ async function getRedditArticlesFromSubreddit(url) {
     articlesArray.push(articleDetails)
 
   })
-  return { articlesArray, 'errorCount': redditErrors.errorCount }
+  return { articlesArray, 'errorCount': errorLog.errorCount }
 }
 
 function convertToInt(string) {
