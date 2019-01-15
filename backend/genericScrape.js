@@ -27,7 +27,7 @@ function genericScrape(url) {
       })
     })
 
-    const siteLogo = getLogo.then((images) => {
+    const siteLogo = await getLogo.then((images) => {
       console.log("SITE LOGO IS.....", images.icon)
       if (images.openGraph) {
         return images.openGraph
