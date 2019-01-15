@@ -73,6 +73,13 @@ function convertToInt(string) {
 }
 
 async function getSubredditsFromSearch(searchStr){
+
+  function formatUrl(url){
+    const begin = url.indexOf('/r/')
+    const end = url.indexOf('/',begin+3)
+    return url.slice(begin,end)
+  }
+
   const url = 'https://www.reddit.com/search?q=' + searchStr
   const html = await parseUrl.getHTML(url).catch(e=>console.log(e))
   const $ = cheerio.load(html)
@@ -80,12 +87,12 @@ async function getSubredditsFromSearch(searchStr){
 
   $('a').each((i,el) => allLinks[i] = el.attribs['href'])
 
-  const allSubreddits = allLinks.filter(link => link.indexOf('/r/')>-1)
+  const subRedditsOnly = allLinks.filter(link => link.indexOf('/r/')>-1)
+  const uniqueSubs = Array.from(new Set(subRedditsOnly))
+  const formattedSubs = uniqueSubs.map(link => formatUrl(link))
+  const allUniqueSubreddits = Array.from(new Set(formattedSubs))
 
-  console.log(allSubreddits)
-
+return allUniqueSubreddits
 }
 
-//getSubredditsFromSearch('artificial')
-
-module.exports = { getRedditArticlesFromSubreddit }
+module.exports = { getRedditArticlesFromSubreddit, getSubredditsFromSearch}
