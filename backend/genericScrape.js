@@ -20,6 +20,8 @@ function genericScrape(url) {
     const articleTitle = errorLog.checkUndefined($('h1').text())
 
     //Get site logo
+
+    //Try this in next attempt $('meta[property="og:image"]').attr('content')
     const getLogo = await new Promise((resolve) => {
       scrapeTools.websiteLogo('http://' + parseUrl.extractHostname(url), (error, images) => {
         if (error) console.log(error)
