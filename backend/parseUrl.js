@@ -2,17 +2,18 @@ const request = require('request')
 const validUrl = require('valid-url')
 
 function getHTML(url) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     request(url, function (error, response, body) {
       try {
         if (error) {
-          resolve(error)
+          throw error
         }
         else if (!error && response.statusCode == 200) {
           resolve(body)
         }
-      } catch (e) {
-        resolve(e)
+      } catch (error) {
+        console.log("Error at getHTML(): ", error)
+        reject(error)
       }
     })
   })

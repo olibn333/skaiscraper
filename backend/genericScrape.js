@@ -20,45 +20,20 @@ function genericScrape(url) {
     const articleTitle = errorLog.checkUndefined($('h1').text())
 
     //Get site logo
+    let siteLogo = $('meta[property="og:image"]').eq(0).attr('content')
+    if (siteLogo === undefined) {
+      siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
+    }
 
     //Try this in next attempt $('meta[property="og:image"]').attr('content')
-    const getLogo = await new Promise((resolve) => {
-      scrapeTools.websiteLogo('http://' + parseUrl.extractHostname(url), (error, images) => {
-        if (error) console.log(error)
-        resolve(images)
-      })
-    })
-
-    const siteLogo = (getLogo.openGraph) ? getLogo.openGraph : getLogo.icon
-
-    // const siteLogo = await getLogo.then((images) => {
-    //   console.log("SITE LOGO IS.....", images.icon)
-    //   if (images.openGraph) {
-    //     return images.openGraph
-    //   } else {
-    //     return images.icon
-    //   }
-    // }).catch(error => console.log("IT FUCKED UP", error))
-
-    // const getLogo = async (url) => {
-    //   const logo = await scrapeTools.websiteLogo(url, (error, images) => {
-    //     if (error) console.log("getLogo error: ", error)
-    //     if (images.openGraph) {
-    //       // console.log(images)
-    //       return images.openGraph
-    //     } else {
-    //       // console.log(images)
-    //       return images.icon
-    //     }
+    // const getLogo = await new Promise((resolve) => {
+    //   scrapeTools.websiteLogo('http://' + parseUrl.extractHostname(url), (error, images) => {
+    //     if (error) console.log(error)
+    //     resolve(images)
     //   })
-    //   return logo
-    // }
+    // })
 
-    // // const siteLogo = await getLogo('http://' + parseUrl.extractHostname(url))
-
-    // console.log("please for the love of god work", await getLogo('http://' + parseUrl.extractHostname(url)))
-
-    // let siteLogo
+    // const siteLogo = (getLogo.openGraph) ? getLogo.openGraph : getLogo.icon
     
     //Get body text
     let bodyText = []
