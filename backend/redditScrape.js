@@ -72,15 +72,18 @@ function convertToInt(string) {
   }
 }
 
+
+//Returns a resolved promise with an array of all subreddits associated with a search term
 async function getSubredditsFromSearch(searchStr){
 
   function formatUrl(url){
     const begin = url.indexOf('/r/')
-    const end = url.indexOf('/',begin+3)
+    const end = url.indexOf('/',begin + 3) + 1 || url.length
     return url.slice(begin,end)
   }
-
-  const url = 'https://www.reddit.com/search?q=' + searchStr
+  
+  const searchStrURI = console.log(encodeURI(searchStr))
+  const url = 'https://www.reddit.com/search?q=' + searchStrURI
   const html = await parseUrl.getHTML(url).catch(e=>console.log(e))
   const $ = cheerio.load(html)
   let allLinks = []
@@ -92,7 +95,7 @@ async function getSubredditsFromSearch(searchStr){
   const formattedSubs = uniqueSubs.map(link => formatUrl(link))
   const allUniqueSubreddits = Array.from(new Set(formattedSubs))
 
-return allUniqueSubreddits
+  return allUniqueSubreddits
 }
 
 module.exports = { getRedditArticlesFromSubreddit, getSubredditsFromSearch}
