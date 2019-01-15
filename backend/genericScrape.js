@@ -77,6 +77,20 @@ function genericScrape(url) {
   })
 }
 
+
+//websitelogotest
+function getImages() {
+  scrapeTools.websiteLogo('https://www.reddit.com/', (error, images) => {
+    //have to do stuff with images here
+    websiteimagesHandler(images)
+  })
+}
+
+function websiteimagesHandler(images){
+  //or here
+  console.log(images)
+}
+
 //Promise test
 function asyncSendToDB(data) {
   return new Promise(function(resolve, reject) {
