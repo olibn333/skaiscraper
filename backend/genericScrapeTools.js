@@ -1,6 +1,6 @@
 const uuid = require('uuid/v1');
 const parseUrl = require('./parseUrl')
-
+const websiteLogo = require('website-logo')
 
 //Creates the 'shell' for scrape results object
 function createScrapeResultsObject(url) {
@@ -32,4 +32,4 @@ class errorLog {
   }
 }
 
-module.exports = { createScrapeResultsObject, errorLog }
+module.exports = { createScrapeResultsObject, websiteLogo, errorLog }

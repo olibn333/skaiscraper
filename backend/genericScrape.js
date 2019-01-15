@@ -18,12 +18,45 @@ function genericScrape(url) {
 
     //Article details
     const articleTitle = errorLog.checkUndefined($('h1').text())
+
     //Get site logo
-    let siteLogo = errorLog.checkUndefined($('header img').attr('src'))
-    if (!parseUrl.validUrl.isUri(siteLogo)) {
-      siteLogo = "Not found"
-    }
-    if (siteLogo == "Not found") console.log("Failed to get site logo from " + parseUrl.extractHostname(url))
+    const getLogo = new Promise((resolve) => {
+      scrapeTools.websiteLogo('http://' + parseUrl.extractHostname(url), (error, images) => {
+        if (error) console.log(error)
+        resolve(images)
+      })
+    })
+
+    let siteLogo
+
+    getLogo.then((images) => {
+      if (images.openGraph) {
+        siteLogo = images.openGraph
+      } else {
+        siteLogo = images.icon
+      }
+      console.log("SITE LOGO IS.....", siteLogo)
+    }).catch(error => console.log("IT FUCKED UP", error))
+
+    // const getLogo = async (url) => {
+    //   const logo = await scrapeTools.websiteLogo(url, (error, images) => {
+    //     if (error) console.log("getLogo error: ", error)
+    //     if (images.openGraph) {
+    //       // console.log(images)
+    //       return images.openGraph
+    //     } else {
+    //       // console.log(images)
+    //       return images.icon
+    //     }
+    //   })
+    //   return logo
+    // }
+
+    // // const siteLogo = await getLogo('http://' + parseUrl.extractHostname(url))
+
+    // console.log("please for the love of god work", await getLogo('http://' + parseUrl.extractHostname(url)))
+
+    // let siteLogo
     
     //Get body text
     let bodyText = []

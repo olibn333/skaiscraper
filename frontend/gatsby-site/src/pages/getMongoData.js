@@ -30,6 +30,9 @@ const styles = theme => ({
     maxWidth: '100%',
     maxHeight: '100%',
   },
+  margin: {
+    margin: theme.spacing.unit * 2,
+  }
 });
 
 const articles = (props) => {
@@ -38,13 +41,13 @@ const articles = (props) => {
   return (
     <Layout>
       <Grid container spacing={24}>
-        {data.allMongodbSkaiScraperreferencedArticles.edges.map(({ node }, index) => (
+        {data.allMongodbTestingArticles.edges.map(({ node }, index) => (
           <div className={classes.root} key={index}>
             <Paper className={classes.paper}>
               <Grid container spacing={16}>
                 <Grid item>
                   <ButtonBase className={classes.image}>
-                    <Badge className={classes.margin} badgeContent={Math.floor(Math.random() * 1000)} color="primary">
+                    <Badge className={classes.margin} badgeContent={node.votesCount} max={999} color="primary">
                       <img className={classes.img} alt="complex" src={node.picUrl} />
                     </Badge>
                   </ButtonBase>
@@ -65,7 +68,7 @@ const articles = (props) => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    {`siteLogo`}
+                    <img className={classes.img} style={{ maxWidth: '100px' }} alt="logo" src={node.siteLogo} />
                   </Grid>
                 </Grid>
               </Grid>
@@ -79,13 +82,16 @@ const articles = (props) => {
 
 export const query = graphql`
   query {
-    allMongodbSkaiScraperreferencedArticles(limit: 20) {
+    allMongodbTestingArticles(limit: 20) {
       edges {
         node {
           titleText
           articleUrl
           picUrl
           commentsUrl
+          siteLogo
+          votesCount
+          commentsCount
         }
       }
     }

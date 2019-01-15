@@ -37,7 +37,7 @@ module.exports = {
     {
       resolve: `gatsby-source-mongodb`,
       options: {
-        dbName: `skaiScraper-referenced`,
+        dbName: `testing`,
         collection: [`scrapes`, `articles`],
         //map: { articles: { /* WHAT DO I DO HERE? */ } },
         server: { address: 'cluster0-shard-00-01-ywxua.mongodb.net', port: 27017},
