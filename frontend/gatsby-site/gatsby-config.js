@@ -49,6 +49,9 @@ module.exports = {
       resolve: `@wapps/gatsby-plugin-material-ui`,
       options: {
         theme: {
+          typography: {
+            useNextVariants: true,
+          },
           primaryColor: 'dodgerblue'
         }
       }

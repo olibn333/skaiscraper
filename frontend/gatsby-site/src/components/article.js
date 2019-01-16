@@ -1,5 +1,5 @@
 import React from 'react'
-import {Typography} from '@material-ui/core/';
+import { Typography } from '@material-ui/core/';
 import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons/';
 import { withStyles } from '@material-ui/core/styles';
@@ -19,11 +19,11 @@ const styles = theme => ({
   },
 });
 
-const Article = ({ data, classes }) => {
+const Article = ({data}) => {
 
   return (
-    <ExpansionPanel className={classes.root}>
-      <ExpansionPanelSummary className={classes.heading} expandIcon={<ExpandMore/>}>
+    <ExpansionPanel >
+      <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
         <Typography>
           {data.keywords.join(' ')}
         </Typography>

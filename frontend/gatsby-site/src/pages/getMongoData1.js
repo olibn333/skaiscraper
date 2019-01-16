@@ -1,8 +1,6 @@
 import React from "react"
 import { graphql } from "gatsby"
 import Layout from "../components/layout"
-import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
 import Article from '../components/article'
 
 
@@ -12,7 +10,10 @@ const articles = ({data}) => {
   return (
     <Layout>
         {data.allArticles.edges.map(({ node }, index) => (
-          <Article data = {node}/>
+          <Article
+            key = {index}
+            data = {node}
+          />
         ))}
     </Layout>
   )
@@ -39,9 +40,5 @@ export const query = graphql`
   }
 }
 `
-
-articles.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default articles;
