@@ -14,6 +14,9 @@ const IndexPage = ({data}) => (
       <Link to="/getMongoData/">OPEN ARTICLES</Link>
     </div>
     <div>
+      <Link to="/getMongoData1/">OPEN ARTICLES1</Link>
+    </div>
+    <div>
       <Link to="/test/">TEST PAGE</Link>
     </div>
     <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
