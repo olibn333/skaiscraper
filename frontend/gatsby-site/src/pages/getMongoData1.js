@@ -6,10 +6,16 @@ import Article from '../components/article'
 
 
 const articles = ({data}) => {
-  // const { data } = props
+
+  const sortedData = data.allArticles.edges.sort(
+    function(a,b) {
+      if (a.node.votesCount > b.node.votesCount){return -1}
+      if (a.node.votesCount < b.node.votesCount){return 1}
+      return 0
+    })
   return (
     <Layout>
-        {data.allArticles.edges.map(({ node }, index) => (
+        {sortedData.map(({ node }, index) => (
           <Article
             key = {index}
             data = {node}
@@ -33,7 +39,7 @@ export const query = graphql`
         articleId
         articleTitle
         siteLogo
-        
+        keywords
         bodyText        
       }
     }

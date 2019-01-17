@@ -4,6 +4,8 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
+  Grid,
+  ButtonBase,
   Badge
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons/';
@@ -23,13 +25,20 @@ const styles = theme => ({
     verticalAlign: 'middle',
   },
   img: {
-    clipPath: 'circle(20%)',
-    marginLeft: '-5%',
-    marginBottom: '0',
+    margin: 'auto',
+    display: 'block',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
   margin: {
     margin: theme.spacing.unit * 2,
-  }
+  },
+  badge: {
+    minWidth: '22px',
+    width: 'auto',
+    borderRadius: '10px',
+    padding: '0px 4px'
+  },
 });
 
 const Article = ({ data, classes }) => {
@@ -37,14 +46,31 @@ const Article = ({ data, classes }) => {
   return (
     <ExpansionPanel className={classes.root} elevation={10}>
       <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-          <img className={classes.img} alt="complex" src={data.picUrl} />
+        <Grid container spacing={16}>
+          <Grid item>
+            <ButtonBase className={classes.image}>
+              <Badge
+                classes={{
+                  badge: classes.badge
+                }}
+                badgeContent={data.votesCount}
+                max={9999}
+                color="primary"
+              >
+                <img className={classes.img} alt="complex" src={data.picUrl} />
+              </Badge>
+            </ButtonBase>
+          </Grid>
+        </Grid>
         <Typography className={classes.heading}>
           {data.keywords.join(' ')}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Typography>
-          {data.titleText}
+          <div className={classes.heading}>{data.titleText}</div>
+          <div>{data.bodyText[0]}</div>
+          <div>{data.bodyText[1]}</div>
         </Typography>
       </ExpansionPanelDetails>
     </ExpansionPanel>
