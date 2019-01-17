@@ -55,7 +55,8 @@ function genericScrape(url) {
     })
 
     //Find keywords from title and body
-    const keywords = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['no keywords']
+    const keywordsTry = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['']
+    const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
     resolve({ articleTitle, siteLogo, keywords, bodyText })
