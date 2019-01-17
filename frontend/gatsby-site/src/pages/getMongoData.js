@@ -30,8 +30,14 @@ const styles = theme => ({
     maxWidth: '100%',
     maxHeight: '100%',
   },
+  logo: {
+    margin: 'auto',
+    display: 'block',
+    width: '50px'
+  },
   margin: {
     margin: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit * 3,
   }
 });
 
@@ -47,7 +53,7 @@ const articles = (props) => {
               <Grid container spacing={16}>
                 <Grid item>
                   <ButtonBase className={classes.image}>
-                    <Badge className={classes.margin} badgeContent={node.votesCount} max={999} color="primary">
+                    <Badge className={classes.margin} variant='dot' badgeContent={node.votesCount} max={9999} color="primary">
                       <img className={classes.img} alt="complex" src={node.picUrl} />
                     </Badge>
                   </ButtonBase>
@@ -68,7 +74,7 @@ const articles = (props) => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <img className={classes.img} style={{ maxWidth: '100px' }} alt="logo" src={node.siteLogo} />
+                    <img className={classes.logo} alt="logo" src={node.siteLogo} />
                   </Grid>
                 </Grid>
               </Grid>

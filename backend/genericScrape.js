@@ -20,10 +20,20 @@ function genericScrape(url) {
     const articleTitle = errorLog.checkUndefined($('h1').text())
 
     //Get site logo
-    let siteLogo = $('meta[property="og:image"]').eq(0).attr('content')
-    if (siteLogo === undefined) {
-      siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
-    }
+    const logoSelector = [
+      '[id=logo] img',
+      '[id*=logo] img',
+      '[class=logo] img',
+      '[class*=logo] img'
+    ].join()
+
+    let siteLogo = $(logoSelector).attr('src')
+
+    if (siteLogo === undefined) siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
+
+    // const openGraph = $('meta[property="og:image"]').eq(0).attr('content')
+
+    // siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
 
     //Try this in next attempt $('meta[property="og:image"]').attr('content')
     // const getLogo = await new Promise((resolve) => {

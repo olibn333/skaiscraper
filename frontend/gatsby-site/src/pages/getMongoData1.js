@@ -33,7 +33,7 @@ export const query = graphql`
         articleId
         articleTitle
         siteLogo
-        keywords
+        
         bodyText        
       }
     }
