@@ -78,7 +78,7 @@ const articles = (props) => {
                       <Typography gutterBottom variant="subtitle1">
                         <a href={node.articleUrl}>{node.titleText}</a>
                       </Typography>
-                      <Typography gutterBottom>Other information</Typography>
+                      <Typography gutterBottom>{node.bodyText[0]}..</Typography>
                       <Typography color="textSecondary">Article Number: {index}</Typography>
                     </Grid>
                     <Grid item>
@@ -122,6 +122,7 @@ export const query = graphql`
           siteLogo
           votesCount
           commentsCount
+          bodyText
         }
       }
     }

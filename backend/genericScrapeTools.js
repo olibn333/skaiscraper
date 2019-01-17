@@ -25,7 +25,7 @@ class errorLog {
   checkUndefined(query) {
     if (query === undefined) {
       this.errorCount += 1
-      return "Not found"
+      return "Not Found"
     } else {
       return query
     }

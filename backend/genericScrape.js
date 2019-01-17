@@ -27,9 +27,7 @@ function genericScrape(url) {
       '[class*=logo] img'
     ].join()
 
-    let siteLogo = $(logoSelector).attr('src')
-
-    if (siteLogo === undefined) siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
+    const siteLogo = $(logoSelector).attr('src') || 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
 
     // const openGraph = $('meta[property="og:image"]').eq(0).attr('content')
 
