@@ -35,6 +35,12 @@ const styles = theme => ({
     display: 'block',
     width: '50px'
   },
+  badge: {
+    minWidth: '22px',
+    width: 'auto',
+    borderRadius: '10px',
+    padding: '0px 4px'
+  },
   margin: {
     margin: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit * 3,
@@ -53,7 +59,15 @@ const articles = (props) => {
               <Grid container spacing={16}>
                 <Grid item>
                   <ButtonBase className={classes.image}>
-                    <Badge className={classes.margin} variant='dot' badgeContent={node.votesCount} max={9999} color="primary">
+                  <Badge
+                    classes={{
+                      margin: classes.margin,
+                      badge: classes.badge
+                    }}
+                    badgeContent={node.votesCount}
+                    max={9999}
+                    color="primary"
+                  >
                       <img className={classes.img} alt="complex" src={node.picUrl} />
                     </Badge>
                   </ButtonBase>
@@ -68,9 +82,19 @@ const articles = (props) => {
                       <Typography color="textSecondary">Article Number: {index}</Typography>
                     </Grid>
                     <Grid item>
-                      <Button variant="contained" className={classes.button}>
-                        <a href={node.commentsUrl}>Comments</a>
-                      </Button>
+                      <Badge
+                        classes={{
+                          margin: classes.margin,
+                          badge: classes.badge
+                        }}
+                        badgeContent={node.commentsCount}
+                        max={9999}
+                        color="secondary"
+                      >
+                        <Button variant="contained" className={classes.button}>
+                          <a href={node.commentsUrl}>Comments</a>
+                        </Button>
+                      </Badge>
                     </Grid>
                   </Grid>
                   <Grid item>
