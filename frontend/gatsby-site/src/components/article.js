@@ -6,7 +6,9 @@ import {
   ExpansionPanelDetails,
   Grid,
   ButtonBase,
-  Badge
+  Badge,
+  Divider,
+  Avatar
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons/';
 import { withStyles } from '@material-ui/core/styles';
@@ -17,18 +19,22 @@ const styles = theme => ({
     width: '100%',
     backgroundColor: blueGrey[100]
   },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
+  title: {
     flexShrink: 0,
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(20),
     color: red[900],
-    fontWeight: 'bold',
+    fontWeight: 500,
     verticalAlign: 'middle',
   },
-  img: {
-    margin: 'auto',
-    display: 'block',
-    maxWidth: '100%',
-    maxHeight: '100%',
+  bigAvatar: {
+    margin: 10,
+    width: 70,
+    height: 70,
+  },
+  avImg : {
+    marginBottom : 0
   },
   margin: {
     margin: theme.spacing.unit * 2,
@@ -39,6 +45,9 @@ const styles = theme => ({
     borderRadius: '10px',
     padding: '0px 4px'
   },
+  tight : {
+    padding: 0
+  }
 });
 
 const Article = ({ data, classes }) => {
@@ -47,7 +56,7 @@ const Article = ({ data, classes }) => {
     <ExpansionPanel className={classes.root} elevation={10}>
       <ExpansionPanelSummary expandIcon={<ExpandMore />}>
         <Grid container spacing={16}>
-          <Grid item>
+          <Grid item className={classes.tight}>
             <ButtonBase className={classes.image}>
               <Badge
                 classes={{
@@ -57,21 +66,25 @@ const Article = ({ data, classes }) => {
                 max={9999}
                 color="primary"
               >
-                <img className={classes.img} alt="complex" src={data.picUrl} />
+                <Avatar classes={{img: classes.avImg}} className={classes.bigAvatar} alt="AI" src={data.picUrl} />
               </Badge>
             </ButtonBase>
           </Grid>
         </Grid>
-        <Typography className={classes.heading}>
+        <Typography className={classes.heading} classes={{ root: classes.title }}>
           {data.keywords.join(' ')}
         </Typography>
       </ExpansionPanelSummary>
+      <Divider />
       <ExpansionPanelDetails>
-        <Typography>
-          <div className={classes.heading}>{data.titleText}</div>
-          <div>{data.bodyText[0]}</div>
-          <div>{data.bodyText[1]}</div>
+        <Typography variant="h6">
+          {data.titleText}
+          <Typography variant="body2">
+            {data.bodyText[0]}
+            {data.bodyText[1]}
+          </Typography>
         </Typography>
+
       </ExpansionPanelDetails>
     </ExpansionPanel>
   )
