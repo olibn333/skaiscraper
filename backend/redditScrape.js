@@ -7,6 +7,24 @@ const errorLog = new scrapeTools.errorLog
 // Creates an ArticlesArray and ErrorLog
 async function getRedditArticlesFromSubreddit(url) {
 
+  function isOldReddit(url) {
+    if (url.indexOf('//old.') > -1) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  if (isOldReddit(url)) {
+   return getOldReddit(url)
+  } else {
+    return getNewReddit(url)
+  }
+
+  
+}
+
+async function getNewReddit(url){
   //Load cheerio with HTML
   const html = await parseUrl.getHTML(url)
   const $ = cheerio.load(html)
@@ -55,6 +73,55 @@ async function getRedditArticlesFromSubreddit(url) {
     votesCount = errorLog.checkUndefined($(element).parent().siblings().eq(0).text())
     votesCount = convertToInt(votesCount)
 
+    //Process
+    const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
+    articlesArray.push(articleDetails)
+
+  })
+  return { articlesArray, 'errorCount': errorLog.errorCount }
+}
+
+async function getOldReddit(url){
+  //Load cheerio with HTML
+  const html = await parseUrl.getHTML(url)
+  const $ = cheerio.load(html)
+
+  let articlesArray = []
+
+  //Scrape details with cheerio
+  const articles = $('.thing')
+
+  articles.each(function (i, element) {
+
+    // let titleEl, titleText, commentsUrl, picUrl, articleUrl, commentsCount, votesCount
+
+    //Title
+    const titleEl = $('a.title', element)
+    const titleText = errorLog.checkUndefined(titleEl.text())
+    
+    //Article URL
+    let articleUrl = errorLog.checkUndefined(titleEl.attr('href'))
+    if (articleUrl.indexOf('/r/') == 0) {
+      articleUrl = url.split('/r/')[0] + articleUrl
+    }
+
+    //Reddit URL
+    const commentsEl = $('a.comments', element)
+    const commentsUrl = errorLog.checkUndefined(url.split('/r/')[0] + commentsEl.attr('href'))
+    const commentsCount = convertToInt(commentsEl.text().split('comments')[0])
+
+    //Votes
+    const votesEl = $('div.score.unvoted', element)
+    const votesCount = convertToInt(votesEl.text())
+
+    //Image URL
+      const picEl = $('a.thumbnail > img', element)
+      const picUrl = errorLog.checkUndefined(picEl.attr('src'))
+
+    //Article Index
+    articleIndex = i
+
+    
     //Process
     const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
     articlesArray.push(articleDetails)

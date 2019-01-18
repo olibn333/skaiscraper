@@ -7,10 +7,8 @@ const scrapeTools = require('./genericScrapeTools')
 const errorLog = new scrapeTools.errorLog
 
 //Very basic scrape of body text. Needs improving!
-function genericScrape(url) {
+async function genericScrape(url) {
   const domainName = parseUrl.extractRootDomain(url)
-
-  return new Promise(async function(resolve, reject) {
 
     //Scrape details with cheerio
     const html = await parseUrl.getHTML(url)
@@ -59,10 +57,10 @@ function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    resolve({ articleTitle, siteLogo, keywords, bodyText })
+    return { articleTitle, siteLogo, keywords, bodyText }
 
-    reject("Something went wrong in genericScrape..")
-  })
+    //reject("Something went wrong in genericScrape..")
+  
 }
 
 
@@ -89,8 +87,6 @@ function asyncSendToDB(data) {
 async function scrapeMultipleSites(urls) {
   let articlesArray = []
   for (url of urls) {
-    //Sanitise url
-    url = url.replace('‘','').replace('’','')
     console.log("Scraping ", url)
     //Await promise to resolve
     const currentScrapeData = await genericScrape(url).catch(error => console.log(error))

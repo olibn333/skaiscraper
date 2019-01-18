@@ -5,12 +5,13 @@ const mongoStore = require('./mongoStore')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
-  const url = 'https://www.reddit.com/r/futurology'
+  const url = 'https://old.reddit.com/r/Futurology/'
   const scrapeObjShell = scrapeTools.createScrapeResultsObject(url)
   console.log("Scraping " + url + "...")
 
   //Get Articles from Subreddit
-  const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url).catch(error => console.log("redditScrape.getRedditArticlesFromSubreddit failed to complete!", error))
+  const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url)
+  
   console.log(articlesArrayObj.articlesArray.length + " articles scraped with " + articlesArrayObj.errorCount + " details not found.")
   
   //Assign articleIds to articlesArrayObj
@@ -33,5 +34,6 @@ async function scrapeInit() {
   //Send to DB
   mongoStore.sendToDB(scrapeObj)
 }
+
 
 scrapeInit()
