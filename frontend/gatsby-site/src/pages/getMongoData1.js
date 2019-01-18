@@ -8,7 +8,17 @@ import PrimarySearchAppBar from '../components/searchbar'
 
 const articles = ({ data }) => {
 
-  const sortedData = data.allArticles.edges.sort(
+  
+  function removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj.node[prop]).indexOf(obj.node[prop]) === pos;
+    });
+  }
+
+  const allArticles = data.allArticles.edges
+  const uniqueData = removeDuplicates(allArticles, 'articleUrl')
+
+  const sortedData = uniqueData.sort(
     function (a, b) {
       if (a.node.votesCount > b.node.votesCount) { return -1 }
       if (a.node.votesCount < b.node.votesCount) { return 1 }

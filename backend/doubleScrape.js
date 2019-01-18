@@ -5,7 +5,7 @@ const mongoStore = require('./mongoStore')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
-  const url = 'https://www.reddit.com/r/artificial'
+  const url = 'https://www.reddit.com/r/futurology'
   const scrapeObjShell = scrapeTools.createScrapeResultsObject(url)
   console.log("Scraping " + url + "...")
 
