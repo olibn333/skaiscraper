@@ -26,7 +26,7 @@ const articles = ({ data }) => {
     })
   return (
     <Layout>
-      <PrimarySearchAppBar />
+      <PrimarySearchAppBar simple/>
       {sortedData.map(({ node }, index) => (
         <Article
           key={index}
