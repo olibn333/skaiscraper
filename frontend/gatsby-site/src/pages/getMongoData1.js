@@ -26,7 +26,9 @@ const articles = ({ data }) => {
     })
   return (
     <Layout>
-      <PrimarySearchAppBar />
+      <div style={{ marginTop: 10 }}>
+        <PrimarySearchAppBar simple/>
+      </div>
       {sortedData.map(({ node }, index) => (
         <Article
           key={index}
