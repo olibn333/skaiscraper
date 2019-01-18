@@ -33,7 +33,9 @@ import PrimarySearchAppBar from './searchbar'
 // )
 
 const Header = ({ siteTitle }) => (
-  <PrimarySearchAppBar title={siteTitle}></PrimarySearchAppBar>
+  <div style={{ marginBottom: `1.45rem` }}>
+    <PrimarySearchAppBar title={siteTitle}></PrimarySearchAppBar>
+  </div>
 )
 
 Header.propTypes = {
