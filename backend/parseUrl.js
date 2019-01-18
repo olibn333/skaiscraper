@@ -8,8 +8,10 @@ function getHTML(url) {
         if (error) {
           throw error
         }
-        else if (!error && response.statusCode == 200) {
+        else if (response.statusCode == 200) {
           resolve(body)
+        } else {
+          resolve('')
         }
       } catch (error) {
         console.log("Error at getHTML(): ", error)

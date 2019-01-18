@@ -8,7 +8,6 @@ const errorLog = new scrapeTools.errorLog
 
 //Very basic scrape of body text. Needs improving!
 async function genericScrape(url) {
-  const domainName = parseUrl.extractRootDomain(url)
 
     //Scrape details with cheerio
     const html = await parseUrl.getHTML(url)
