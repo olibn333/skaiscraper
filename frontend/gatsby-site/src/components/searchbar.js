@@ -165,7 +165,7 @@ class PrimarySearchAppBar extends React.Component {
 
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="static" style={{ backgroundColor: this.props.color }}>
           <Toolbar>
             <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
               <MenuIcon />
@@ -235,6 +235,7 @@ PrimarySearchAppBar.propTypes = {
 PrimarySearchAppBar.defaultProps = {
   title: ``,
   simple: false,
+  color: 'dodgerblue'
 }
 
 export default withStyles(styles)(PrimarySearchAppBar);

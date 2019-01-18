@@ -3,7 +3,7 @@ import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import Article from '../components/article'
 import PrimarySearchAppBar from '../components/searchbar'
-
+import { red } from '@material-ui/core/colors/';
 
 
 const articles = ({ data }) => {
@@ -26,7 +26,7 @@ const articles = ({ data }) => {
     })
   return (
     <Layout>
-      <PrimarySearchAppBar simple/>
+      <PrimarySearchAppBar simple color={'red'}/>
       {sortedData.map(({ node }, index) => (
         <Article
           key={index}
