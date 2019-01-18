@@ -39,6 +39,8 @@ function sendToMongoDB(username, password, file) {
 
   //Arrticles Array
   const articlesArray = file.articlesArray
+  const articleUrlsFilter = articlesArray.map(a => a.articleUrl).join()
+
   //Scrape Object
   const scrapeObject = Object.assign(file, {})
   delete scrapeObject.articlesArray
@@ -59,10 +61,21 @@ function sendToMongoDB(username, password, file) {
     })
 
     //Insert Articles Array
-    dbo.collection('articles').insertMany(articlesArray, function (err, res) {
+    dbo.collection('articlesTest').insertMany(articlesArray, function (err, res) {
       // if (err) throw err
       console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
     })
+
+    // //Upsert Articles Array
+    // dbo.collection('articlesTest').updateMany(
+    //   {articleUrl: {$in:[articleUrlsFilter]}}, 
+    //   {$set:articlesArray}, 
+    //   {upsert:true}, 
+    //   function (err, res) {
+    //   // if (err) throw err
+    //   console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
+    // }
+    // )
     db.close()
   })
 }
