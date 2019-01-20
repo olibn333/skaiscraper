@@ -2,6 +2,7 @@ const redditScrape = require('./redditScrape')
 const scrapeTools = require('./genericScrapeTools')
 const genericScrape = require('./genericScrape')
 const mongoStore = require('./mongoStore')
+const analytics = require('./analytics')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
@@ -27,8 +28,11 @@ async function scrapeInit() {
   //console.log(articleDetails)
 
   //Slot details into scrape object
-  articleDetails.map((article,i) => {
-    scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], article)
+  articleDetails.map( async (article,i) => {
+    //Add Facebook Likes and Shares
+    const fbLikesShares = await analytics.getFacebookLikesShares(scrapeObj.articlesArray[i].articleUrl)
+      .catch(error => console.log("Error in doubleScrape @ articleDetails.map: ", error))
+    scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], { fbData: fbLikesShares }, article)
   })
 
   //Send to DB
