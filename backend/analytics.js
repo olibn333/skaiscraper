@@ -12,7 +12,7 @@ const getFacebookLikesShares = (url) => {
           const shares = result.share.share_count
           resolve( { likes, shares } )
         }
-      } catch {
+      } catch (error) {
         console.log("Error at getFaceBookLikesShares: ", error)
         reject(error)
       }
@@ -22,7 +22,7 @@ const getFacebookLikesShares = (url) => {
 
 const test = async () => {
   try {
-    const result = await getFacebookLikesShares('http://www.google.com')
+    const result = await getFacebookLikesShares('https://globalnews.ca/news/4856517/vancouver-city-council-votes-to-declare-climate-emergency/')
     console.log(result)
   } catch (error) {
     console.log("Error at test: ", error)
