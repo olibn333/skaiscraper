@@ -106,16 +106,14 @@ async function getOldReddit(url){
       articleUrl = url.split('/r/')[0] + articleUrl
     }
 
-    //Reddit URL
+    //Reddit URL & Comments Count
     const commentsEl = $('a.comments', element)
     const commentsUrl = errorLog.checkUndefined(url.split('/r/')[0] + commentsEl.attr('href'))
+    const commentsCount = convertToInt(commentsEl.text().split('comments')[0])
 
     //Votes
     const votesEl = $('div.score.unvoted', element)
     const votesCount = convertToInt(votesEl.text())
-
-    //Comments
-    const commentsCount = convertToInt(commentsEl.text().split('comments')[0])
 
     //Image URL
     const picEl = $('a.thumbnail > img', element)
