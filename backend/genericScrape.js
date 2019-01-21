@@ -45,7 +45,7 @@ async function genericScrape(url) {
     const paragraphs = $('p')
 
     paragraphs.each(function(i, element) {
-      const currentParagraph = $(element).text()
+      const currentParagraph = errorLog.checkUndefined($(element).text())
       if (currentParagraph.length > 50) {
         bodyText.push(currentParagraph)
       }
