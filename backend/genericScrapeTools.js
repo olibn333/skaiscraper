@@ -27,7 +27,7 @@ class errorLog {
       this.errorCount += 1
       return "Not Found"
     } else {
-      return query
+      return query.replace(/\s+/g,' ').trim()
     }
   }
 }

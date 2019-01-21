@@ -20,8 +20,6 @@ async function getRedditArticlesFromSubreddit(url) {
   } else {
     return getNewReddit(url)
   }
-
-  
 }
 
 async function getNewReddit(url){
