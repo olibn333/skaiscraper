@@ -93,9 +93,13 @@ async function getOldReddit(url){
 
     // let titleEl, titleText, commentsUrl, picUrl, articleUrl, commentsCount, votesCount
 
+    if ($('.stickied-tagline', element).text()) return true
+
     //Title
     const titleEl = $('a.title', element)
     const titleText = errorLog.checkUndefined(titleEl.text())
+
+    console.log(titleText)
 
     //Time Submitted
     const timeSubmitted = errorLog.checkUndefined($('.live-timestamp', element).attr('datetime'))
