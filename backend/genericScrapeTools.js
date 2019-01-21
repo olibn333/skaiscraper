@@ -26,8 +26,10 @@ class errorLog {
     if (query === undefined) {
       this.errorCount += 1
       return "Not Found"
-    } else {
+    } else if (typeof query === 'string') {
       return query.replace(/\s+/g,' ').trim()
+    } else {
+      return query
     }
   }
 }
