@@ -98,6 +98,10 @@ async function getOldReddit(url){
     //Title
     const titleEl = $('a.title', element)
     const titleText = errorLog.checkUndefined(titleEl.text())
+
+    //Time Submitted
+
+    const timeSubmitted = errorLog.checkUndefined($('.live-timestamp', element).attr('datetime'))
     
     //Article URL
     let articleUrl = errorLog.checkUndefined(titleEl.attr('href'))
@@ -123,7 +127,7 @@ async function getOldReddit(url){
 
     
     //Process
-    const articleDetails = { articleIndex, titleText, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
+    const articleDetails = { articleIndex, titleText, timeSubmitted, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
     articlesArray.push(articleDetails)
 
   })
