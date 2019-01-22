@@ -70,14 +70,17 @@ function sendToMongoDB(username, password, file) {
     // })
 
     //Upsert Articles Array
-    articlesArray.forEach((i, article) => {
-      dbo.collection('articlesTest').update(
+    articlesArray.forEach((article, i) => {
+      let newDocs, updatedDocs
+      dbo.collection('articlesTest').updateOne(
         { articleUrl: article.articleUrl },
-        { $set: articlesArray[i] },
+        { $set: article },
         { upsert: true },
         function (err, res) {
           // if (err) throw err
-          console.log("Updated " + res.ops.length + " document(s) to articles collection.")
+          updatedDocs =+ res.modifiedCount
+          newDocs =+ res.upsertedCount
+          console.log("Updated" + res + "document(s) to articles collection.")
         }
       )
     })
