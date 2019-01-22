@@ -6,7 +6,7 @@ const analytics = require('./analytics')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
-  const url = 'https://old.reddit.com/r/Futurology/'
+  const url = 'https://reddit.com/r/Futurology/'
   const scrapeObjShell = scrapeTools.createScrapeResultsObject(url)
   console.log("Scraping " + url + "...")
 
@@ -28,11 +28,8 @@ async function scrapeInit() {
   //console.log(articleDetails)
 
   //Slot details into scrape object
-  articleDetails.map( async (article,i) => {
-    //Add Facebook Likes and Shares
-    const fbLikesShares = await analytics.getFacebookLikesShares(scrapeObj.articlesArray[i].articleUrl)
-      .catch(error => console.log("Error in doubleScrape @ articleDetails.map: ", error))
-    scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], { fbData: fbLikesShares }, article)
+  articleDetails.forEach( (article,i) => {
+    scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], article)
   })
 
   //Send to DB

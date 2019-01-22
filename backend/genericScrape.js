@@ -3,11 +3,15 @@ const mongoStore = require('./mongoStore')
 const parseUrl = require('./parseUrl')
 const headline_parser = require('headline-parser');
 const scrapeTools = require('./genericScrapeTools')
+const analytics = require('./analytics')
 
 const errorLog = new scrapeTools.errorLog
 
 //Very basic scrape of body text. Needs improving!
 async function genericScrape(url) {
+
+    //Pass to fb api
+    const fbLS = await analytics.getFacebookLikesShares(url)
 
     //Scrape details with cheerio
     const html = await parseUrl.getHTML(url)
@@ -56,7 +60,7 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    return { articleTitle, siteLogo, keywords, bodyText }
+    return { articleTitle, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares }
 
     //reject("Something went wrong in genericScrape..")
   
