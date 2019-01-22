@@ -45,6 +45,9 @@ function sendToMongoDB(username, password, file) {
   const scrapeObject = Object.assign(file, {})
   delete scrapeObject.articlesArray
 
+  //Check existing articles
+
+
 
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err
@@ -60,22 +63,24 @@ function sendToMongoDB(username, password, file) {
       console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
     })
 
-    //Insert Articles Array
-    dbo.collection('articlesTest').insertMany(articlesArray, function (err, res) {
-      // if (err) throw err
-      console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-    })
-
-    // //Upsert Articles Array
-    // dbo.collection('articlesTest').updateMany(
-    //   {articleUrl: {$in:[articleUrlsFilter]}}, 
-    //   {$set:articlesArray}, 
-    //   {upsert:true}, 
-    //   function (err, res) {
+    // //Insert Articles Array
+    // dbo.collection('articlesTest').insertMany(articlesArray, function (err, res) {
     //   // if (err) throw err
     //   console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-    // }
-    // )
+    // })
+
+    //Upsert Articles Array
+    articlesArray.forEach((i, article) => {
+      dbo.collection('articlesTest').update(
+        { articleUrl: article.articleUrl },
+        { $set: articlesArray[i] },
+        { upsert: true },
+        function (err, res) {
+          // if (err) throw err
+          console.log("Updated " + res.ops.length + " document(s) to articles collection.")
+        }
+      )
+    })
     db.close()
   })
 }
