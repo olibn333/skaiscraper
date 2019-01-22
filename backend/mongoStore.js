@@ -34,6 +34,14 @@ function promptUserNameandPassword(file, callback) {
   });
 };
 
+let newDocs = 0
+let updatedDocs = 0
+function updateCounts(newDs, updatedDs) {
+  newDocs = newDocs + newDs;
+  updatedDocs = updatedDocs + updatedDs
+}
+
+
 function sendToMongoDB(username, password, file) {
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
 
@@ -45,10 +53,7 @@ function sendToMongoDB(username, password, file) {
   const scrapeObject = Object.assign(file, {})
   delete scrapeObject.articlesArray
 
-  //Check existing articles
-
-
-
+  //Insert Scrape Obj, Upsert articles
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
     if (err) throw err
     console.log("Database Connected!")
@@ -59,7 +64,7 @@ function sendToMongoDB(username, password, file) {
 
     //Insert Scrape Object
     dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
-       if (error) throw error
+      if (error) throw error
       console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
     })
 
@@ -71,16 +76,18 @@ function sendToMongoDB(username, password, file) {
 
     //Upsert Articles Array
     articlesArray.forEach((article, i) => {
-      let newDocs, updatedDocs
+
       dbo.collection('articlesTest').updateOne(
         { articleUrl: article.articleUrl },
         { $set: article },
         { upsert: true },
         function (err, res) {
           // if (err) throw err
-          updatedDocs =+ res.modifiedCount
-          newDocs =+ res.upsertedCount
-          console.log("Updated" + res + "document(s) to articles collection.")
+          if (i == articlesArray.length-1) {
+            updateCounts(res.upsertedCount, res.modifiedCount)
+            console.log("Updated " + updatedDocs + ", inserted " + newDocs + " document(s) to articles collection.")
+          }
+          else { updateCounts(res.upsertedCount, res.modifiedCount) }
         }
       )
     })
