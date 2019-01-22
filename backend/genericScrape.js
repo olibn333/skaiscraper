@@ -12,7 +12,7 @@ async function genericScrape(url) {
 
     //Pass to fb api
     const fbLS = await analytics.getFacebookLikesShares(url)
-    console.log(fbLS)
+
     //Scrape details with cheerio
     const html = await parseUrl.getHTML(url)
     const $ = cheerio.load(html)
