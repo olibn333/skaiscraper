@@ -8,13 +8,11 @@ const getFacebookLikesShares = (url) => {
         if (error) throw error
         else if (response.statusCode == 200) {
           const result = JSON.parse(response.body)
+          const shares = result.share.share_count
           try {
             const likes = result.og_object.likes.summary.total_count
-            const shares = result.share.share_count
             resolve( { likes, shares } )
           } catch (error) {
-            //console.log("Unable to get all data from facebook API: ", error)
-            const shares = result.share.share_count
             resolve( { likes: "No data", shares } )
           }
         }

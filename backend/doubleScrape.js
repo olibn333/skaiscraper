@@ -6,7 +6,7 @@ const analytics = require('./analytics')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
-  const url = 'https://old.reddit.com/r/Futurology/'
+  const url = 'https://reddit.com/r/Futurology/'
   const scrapeObjShell = scrapeTools.createScrapeResultsObject(url)
   console.log("Scraping " + url + "...")
 
