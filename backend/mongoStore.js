@@ -41,6 +41,24 @@ function updateCounts(newDs, updatedDs) {
   updatedDocs = updatedDocs + updatedDs
 }
 
+function setMongoDBProfile(number) {
+  const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
+  MongoClient.connect(url, function (err, db) {
+    db.setProfilingLevel(number)
+  })
+}
+
+function readProfile(){
+  const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
+  MongoClient.connect(url, function (err, db) {
+    const systemDB = db.db('system')
+    systemDB.collection('profile').findOne({},() => {
+      console.log(res)
+    })
+  })
+
+}
+
 
 function sendToMongoDB(username, password, file) {
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
@@ -85,7 +103,7 @@ function sendToMongoDB(username, password, file) {
           // if (err) throw err
           if (i == articlesArray.length-1) {
             updateCounts(res.upsertedCount, res.modifiedCount)
-            console.log("Updated " + updatedDocs + ", inserted " + newDocs + " document(s) to articles collection.")
+            console.log("Updated " + updatedDocs + ", Inserted " + newDocs + " document(s) to articles collection.")
           }
           else { updateCounts(res.upsertedCount, res.modifiedCount) }
         }
