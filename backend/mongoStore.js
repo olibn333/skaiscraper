@@ -17,17 +17,17 @@ async function constructMongoUrl() {
     uname = creds.username
     pword = creds.password
   }
-  const url = "mongodb+srv://" + uname + ":" + pword + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
+  const url = "mongodb+srv://" + uname + ":" + pword + "@cluster0-ywxua.mongodb.net/test?readPreference=secondary";
   //const url = "mongodb://"+uname+":"+pword+"@cluster0-shard-00-00-ywxua.mongodb.net:27017,cluster0-shard-00-01-ywxua.mongodb.net:27017,cluster0-shard-00-02-ywxua.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
   return url
 }
 
 
-async function setProfile(number) {
+async function setProfiling() {
     const url = await constructMongoUrl()
     return MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
       .then(client => {
-        client.db('test').setProfilingLevel(number)
+        client.db('test').setProfilingLevel('all')
         .then(client.close())
         .catch(e =>console.log(e))
       })
@@ -36,16 +36,20 @@ async function setProfile(number) {
 
 async function readProfiler() {
   const url = await constructMongoUrl()
-  const level = MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
     .then(client => {
-      console.log(client.db('test').collection('system.profile').stats().catch(e => console.log(e)))
-        .then(db.close())
+        client.db('system').collection('profile').findOne({})
+        .then(data => {
+          console.log(data)
+        })
         .catch(e => console.log(e))
-    })
-    .catch(e => console.log(e))  //skaiScraper-referenced
+        .then(client.close())
+      })
+    .catch(e => console.log(e))
+    //console.log(level)
 } 
 
-//setProfile(2)
+readProfiler()
 
 
 function sendToDB(file) {
