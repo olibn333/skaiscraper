@@ -34,18 +34,18 @@ async function setProfile(number) {
     .catch(e => console.log(e))  //skaiScraper-referenced
   }
 
-  async function readProfiler() {
-    const url = await constructMongoUrl()
-    const level = MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-      .then(client => {
-        console.log(client.db('test').collection('system.profile').stats().catch(e => console.log(e)))
+async function readProfiler() {
+  const url = await constructMongoUrl()
+  const level = MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+    .then(client => {
+      console.log(client.db('test').collection('system.profile').stats().catch(e => console.log(e)))
         .then(db.close())
-        .catch(e =>console.log(e))
-      })
+        .catch(e => console.log(e))
+    })
     .catch(e => console.log(e))  //skaiScraper-referenced
-  } 
+} 
 
-  setProfile(2)
+//setProfile(2)
 
 
 function sendToDB(file) {
