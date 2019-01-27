@@ -23,35 +23,6 @@ async function constructMongoUrl() {
 }
 
 
-async function setProfiling() {
-    const url = await constructMongoUrl()
-    return MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-      .then(client => {
-        client.db('test').setProfilingLevel('all')
-        .then(client.close())
-        .catch(e =>console.log(e))
-      })
-    .catch(e => console.log(e))  //skaiScraper-referenced
-  }
-
-async function readProfiler() {
-  const url = await constructMongoUrl()
-  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-    .then(client => {
-        client.db('system').collection('profile').findOne({})
-        .then(data => {
-          console.log(data)
-        })
-        .catch(e => console.log(e))
-        .then(client.close())
-      })
-    .catch(e => console.log(e))
-    //console.log(level)
-} 
-
-readProfiler()
-
-
 function sendToDB(file) {
   try {
     const creds = require('../skai-config')
@@ -147,5 +118,51 @@ function sendToMongoDB(username, password, file) {
   })
 }
 
+async function asyncSendToMongoDB(file){
+  //Arrticles Array
+  const articlesArray = file.articlesArray
+  //Scrape Object
+  const scrapeObject = Object.assign(file, {})
+  delete scrapeObject.articlesArray
 
-module.exports = { sendToDB }
+  const url = await constructMongoUrl()
+  const beginTime = new Date()
+
+  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+    .then(client => {
+      const scrapeCol = client.db('testing').collection('scrapestest3')
+      const articlesCol = client.db('testing').collection('scrapestest2')
+
+      scrapeCol.insertOne(scrapeObject)
+        .then(res => console.log(res.result.n + " inserted."))
+        .catch(e=>console.log(e))
+
+      return articlesArray.forEach((article, i) => {
+        articlesCol.updateOne(
+          { articleUrl: article.articleUrl },
+          { $set: article },
+          { upsert: true },
+        )
+        .then(res => console.log(res + " inserted."))
+        .then(()=> client.close())
+        .catch(e=>console.log(e))
+        .then(()=> {
+          const endTime = new Date()
+          const timeDiff = endTime-beginTime
+          return console.log("Executed in " +timeDiff +"ms")
+        })
+      })
+    })
+    .catch(e=>console.log(e))
+}
+
+// function (err, res) {
+//   // if (err) throw err
+//   if (i == articlesArray.length - 1) {
+//     updateCounts(res.upsertedCount, res.modifiedCount)
+//     console.log("Updated " + updatedDocs + ", Inserted " + newDocs + " document(s) to articles collection.")
+//   }
+//   else { updateCounts(res.upsertedCount, res.modifiedCount) }
+// }
+
+module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB}

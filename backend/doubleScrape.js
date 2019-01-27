@@ -33,7 +33,7 @@ async function scrapeInit() {
   })
 
   //Send to DB
-  mongoStore.sendToDB(scrapeObj)
+  mongoStore.asyncSendToMongoDB(scrapeObj)
 }
 
 
