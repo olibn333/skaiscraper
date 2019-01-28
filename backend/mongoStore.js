@@ -141,7 +141,7 @@ async function asyncSendToMongoDB(file) {
     return upD
   })
 
-  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+  return MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
     .then(client => {
       const scrapeCol = client.db('real').collection('scrapes')
       const articlesCol = client.db('real').collection('articles')
@@ -163,6 +163,8 @@ async function asyncSendToMongoDB(file) {
       return console.log("DB writes executed in " + timeDiff + "ms")
     })
 
+    .then()
     .catch(e => console.log(e))
+
 }
 module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB }

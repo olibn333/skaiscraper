@@ -31,9 +31,15 @@ async function scrapeInit() {
   articleDetails.forEach( (article,i) => {
     scrapeObj.articlesArray[i] = Object.assign(scrapeObj.articlesArray[i], article)
   })
+  
+  //Add some metadata to scrape
+  scrapeObj.articleCount = articleDetails.length
 
   //Send to DB
-  mongoStore.asyncSendToMongoDB(scrapeObj)
+  const sendResult = await mongoStore.asyncSendToMongoDB(scrapeObj)
+
+  //Process results
+  console.log(sendResult)
 }
 
 

@@ -127,8 +127,9 @@ async function getOldReddit(url){
     
     //Process
     const articleDetails = { articleIndex, titleText, timeSubmitted, commentsUrl, picUrl, articleUrl, votesCount, commentsCount }
+    if (parseUrl.validUrl.isWebUri(articleUrl)){
     articlesArray.push(articleDetails)
-
+    } 
   })
   return { articlesArray, 'errorCount': errorLog.errorCount }
 }
