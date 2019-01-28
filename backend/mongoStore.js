@@ -118,7 +118,7 @@ function sendToMongoDB(username, password, file) {
   })
 }
 
-async function asyncSendToMongoDB(file){
+async function asyncSendToMongoDB(file) {
   //Arrticles Array
   const articlesArray = file.articlesArray
   //Scrape Object
@@ -128,41 +128,41 @@ async function asyncSendToMongoDB(file){
   const url = await constructMongoUrl()
   const beginTime = new Date()
 
+  const bulkUpdateObj = articlesArray.map((article, i) => {
+    const upD =
+    {
+      "updateOne":
+      {
+        "filter": { articleUrl: article.articleUrl },
+        "update": { $set: article },
+        "upsert": true
+      }
+    }
+    return upD
+  })
+
   MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
     .then(client => {
-      const scrapeCol = client.db('testing').collection('scrapestest3')
-      const articlesCol = client.db('testing').collection('scrapestest2')
+      const scrapeCol = client.db('real').collection('scrapes')
+      const articlesCol = client.db('real').collection('articles')
 
       scrapeCol.insertOne(scrapeObject)
-        .then(res => console.log(res.result.n + " inserted."))
-        .catch(e=>console.log(e))
+        .then(res => console.log(res.result.n + " inserted to scrapes."))
+        .catch(e => console.log(e))
 
-      return articlesArray.forEach((article, i) => {
-        articlesCol.updateOne(
-          { articleUrl: article.articleUrl },
-          { $set: article },
-          { upsert: true },
-        )
-        .then(res => console.log(res + " inserted."))
-        .then(()=> client.close())
-        .catch(e=>console.log(e))
-        .then(()=> {
-          const endTime = new Date()
-          const timeDiff = endTime-beginTime
-          return console.log("Executed in " +timeDiff +"ms")
-        })
-      })
+      articlesCol.bulkWrite(bulkUpdateObj, { ordered: false })
+        .then(res => console.log(res.upsertedCount + " inserted,", res.matchedCount + " updated in articles."))
+        .catch(e => console.log(e))
+
+      return client.close()
     })
-    .catch(e=>console.log(e))
+
+    .then(() => {
+      const endTime = new Date()
+      const timeDiff = endTime - beginTime
+      return console.log("DB writes executed in " + timeDiff + "ms")
+    })
+
+    .catch(e => console.log(e))
 }
-
-// function (err, res) {
-//   // if (err) throw err
-//   if (i == articlesArray.length - 1) {
-//     updateCounts(res.upsertedCount, res.modifiedCount)
-//     console.log("Updated " + updatedDocs + ", Inserted " + newDocs + " document(s) to articles collection.")
-//   }
-//   else { updateCounts(res.upsertedCount, res.modifiedCount) }
-// }
-
-module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB}
+module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB }
