@@ -36,7 +36,7 @@ async function scrapeInit() {
   scrapeObj.articleCount = articleDetails.length
 
   //Send to DB
-  const sendResult = await mongoStore.asyncSendToMongoDB(scrapeObj)
+  const sendResult = await mongoStore.asyncSendToMongoDB2(scrapeObj)
 
   //Process results
   console.log(sendResult)

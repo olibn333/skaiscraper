@@ -1,9 +1,9 @@
 const readline = require('readline');
 const MongoClient = require('mongodb').MongoClient;
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.warn('Unhandled promise rejection:', promise, 'reason:', reason.stack || reason);
-});
+// process.on('unhandledRejection', (reason, promise) => {
+//   console.warn('Unhandled promise rejection:', promise, 'reason:', reason.stack || reason);
+// });
 
 async function constructMongoUrl() {
   try {
@@ -21,7 +21,6 @@ async function constructMongoUrl() {
   //const url = "mongodb://"+uname+":"+pword+"@cluster0-shard-00-00-ywxua.mongodb.net:27017,cluster0-shard-00-01-ywxua.mongodb.net:27017,cluster0-shard-00-02-ywxua.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
   return url
 }
-
 
 function sendToDB(file) {
   try {
@@ -57,13 +56,6 @@ function promptUserNameandPassword() {
 
   return credsPromise
 };
-
-let newDocs = 0
-let updatedDocs = 0
-function updateCounts(newDs, updatedDs) {
-  newDocs = newDocs + newDs;
-  updatedDocs = updatedDocs + updatedDs
-}
 
 function sendToMongoDB(username, password, file) {
   const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
@@ -143,8 +135,9 @@ async function asyncSendToMongoDB(file) {
 
   return MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
     .then(client => {
-      const scrapeCol = client.db('real').collection('scrapes')
-      const articlesCol = client.db('real').collection('articles')
+      const dbo = client.db('real')
+      const scrapeCol = dbo.collection('scrapes')
+      const articlesCol = dbo.collection('articles')
 
       scrapeCol.insertOne(scrapeObject)
         .then(res => console.log(res.result.n + " inserted to scrapes."))
@@ -167,4 +160,72 @@ async function asyncSendToMongoDB(file) {
     .catch(e => console.log(e))
 
 }
-module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB }
+
+async function asyncSendToMongoDB2(file) {
+  //Articles Array
+  const articlesArray = file.articlesArray
+  //Scrape Object
+  const scrapeObject = Object.assign(file, {})
+  delete scrapeObject.articlesArray
+
+  const url = await constructMongoUrl()
+  const beginTime = new Date()
+
+  const bulkUpdateObj = articlesArray.map((article, i) => {
+    const upD =
+    {
+      "updateOne":
+      {
+        "filter": { articleUrl: article.articleUrl },
+        "update": { $set: article },
+        "upsert": true
+      }
+    }
+    return upD
+  })
+
+  let scrapeRes
+  let articlesRes
+
+  try{
+  const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+  const dbo = client.db('testing')
+
+  scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
+  articlesRes = await dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false })
+
+  client.close()
+  } catch(e){
+    console.log(e)
+  }
+
+  const endTime = new Date()
+  const timeDiff = endTime - beginTime
+  const scrapeInsertCount = scrapeRes.result.n
+  const articlesInsertCount = articlesRes.upsertedCount
+  const articlesUpdateCount = articlesRes.matchedCount
+
+  return ({ scrapeRes, articlesRes, timeDiff })
+
+}
+
+
+async function asyncSendToMongoDBTest() {
+  const url = await constructMongoUrl()
+
+  const beginTime = new Date()
+
+  const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+  const dbo = client.db('testing')
+
+  const scrapeRes = await dbo.collection('scrapes').findOne({})
+  const artRes = await dbo.collection('articles').findOne({})
+
+  client.close()
+
+  console.log(scrapeRes, artRes)
+}
+
+//asyncSendToMongoDBTest()
+
+module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB, asyncSendToMongoDB2 }
