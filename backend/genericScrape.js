@@ -28,7 +28,7 @@ async function genericScrape(url) {
       '[class*=logo] img'
     ].join()
 
-    const siteLogo = $(logoSelector).attr('src') || 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
+    const siteLogo = $(logoSelector).attr('src') || 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
 
     // const openGraph = $('meta[property="og:image"]').eq(0).attr('content')
 
@@ -43,6 +43,28 @@ async function genericScrape(url) {
     // })
 
     // const siteLogo = (getLogo.openGraph) ? getLogo.openGraph : getLogo.icon
+
+    //Scrape all links
+    let allLinks = {
+      internalLinks: [],
+      externalLinks: []
+    }
+
+    const links = $('a')
+    links.each((i, link) => {
+      const currentLink = $(link).attr('href')
+      try {
+        //Check for internal links
+        if (currentLink.indexOf(parseUrl.extractRootDomain(url)) > -1) {
+          allLinks.internalLinks.push(currentLink)
+        } else if (currentLink.indexOf('http') > -1) {
+          //All other valid links assumed external
+          allLinks.externalLinks.push(currentLink)
+        }
+      } catch(error) {
+        console.log("Error at links.each(): ", error)
+      }
+    })
     
     //Get body text
     let bodyText = []
@@ -60,7 +82,7 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    return { articleTitle, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares }
+    return { articleTitle, siteLogo, keywords, bodyText, allLinks, fbLikes:fbLS.likes, fbShares:fbLS.shares }
 
     //reject("Something went wrong in genericScrape..")
   
