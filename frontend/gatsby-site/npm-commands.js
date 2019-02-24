@@ -5,12 +5,12 @@ npm.load(function(err) {
   console.log("Load error: ", err)
 
   //Run npm commands
-  npm.command.run('build', (err) => {
+  npm.command.run('deploy', (err) => {
     console.log("Run error: ", err)
   })
 
   npm.on('log', function(message) {
-    //Log installation progress
+    //Log progress
     console.log(message)
   })
 })
