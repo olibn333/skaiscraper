@@ -2,9 +2,8 @@ const uuid = require('uuid/v1');
 const parseUrl = require('./parseUrl')
 const websiteLogo = require('website-logo')
 const cheerio = require('cheerio');
-const scrapeTools = require('./genericScrapeTools')
 const URLParser = require('url')
-
+const parseDomain = require("parse-domain")
 
 //Creates the 'shell' for scrape results object
 function createScrapeResultsObject(url) {
@@ -61,7 +60,7 @@ function getAllLinksfromHTML(html) {
   return allLinks
 }
 
-//Returns object with link internals, externals, uniques, repeats, counts
+//Returns object with links - internals, externals, uniques, repeats, counts
 function analyzeLinks(links, originUrl) {
 
   let linkAnalysis = {
@@ -71,6 +70,10 @@ function analyzeLinks(links, originUrl) {
     linksCount: [],
     repeatedLinks: []
   }
+
+  const parsedLink = URLParser.parse(originUrl)
+  //Hostname without subdomain
+  const domainName = parseDomain(originUrl).domain + "." + parseDomain(originUrl).tld
 
   linkAnalysis.uniqueLinks = Array.from(new Set(links))
   let linksCount = {}
@@ -82,7 +85,7 @@ function analyzeLinks(links, originUrl) {
 
   links.forEach((link, i) => {
     //Check for internal links
-    if (link.indexOf(URLParser.parse(originUrl).hostname) > -1) {
+    if (link.indexOf(domainName) > -1) {
       linkAnalysis.internalLinks.push(link)
     } else {
       //All other valid links assumed external
