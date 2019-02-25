@@ -37,75 +37,81 @@ class errorLog {
   }
 }
 
-//Returns array of all links in url
-async function getAllLinksfromUrl(url) {
-  const html = await parseUrl.getHTML(url).catch(e => console.log(e))
-  const $ = cheerio.load(html)
-  let allLinks = []
-  $('a').each((i, el) => allLinks[i] = el.attribs['href'])
-  //Replace relative links with absolute
-  allLinks.forEach((link, i) => allLinks[i] = URLParser.resolve(url, link))
-  return allLinks
-}
 
 //Returns array of all links in html
-function getAllLinksfromHTML(html) {
+function getAllLinksfromHTML(cheerioHTML, originUrl) {
 
   //const html = await parseUrl.getHTML(url).catch(e=>console.log(e))
-  const $ = cheerio.load(html)
   let allLinks = []
-  $('a').each((i, el) => allLinks[i] = el.attribs['href'])
+  cheerioHTML('a').each((i, el) => allLinks[i] = el.attribs['href'])
+
   //Replace relative links with absolute
-  allLinks.forEach((link, i) => allLinks[i] = URLParser.resolve(url, link))
-  return allLinks
+
+  allLinks.forEach((link, i) => {
+    try {
+      allLinks[i] = URLParser.resolve(originUrl, link)
+    } catch (e) {
+      allLinks[i] = originUrl
+    }
+    return allLinks
+  })
 }
 
-//Returns object with links - internals, externals, uniques, repeats, counts
-function analyzeLinks(links, originUrl) {
 
-  let linkAnalysis = {
-    internalLinks: [],
-    externalLinks: [],
-    uniqueLinks: [],
-    linksCount: [],
-    repeatedLinks: []
+  //Returns array of all links in url
+  async function getAllLinksfromUrl(url) {
+    const html = await parseUrl.getHTML(url).catch(e => console.log(e))
+    const cheerioHTML = cheerio.load(html)
+    return getAllLinksfromHTML(cheerioHTML)
   }
 
-  const parsedLink = URLParser.parse(originUrl)
-  //Hostname without subdomain
-  const domainName = parseDomain(originUrl).domain + "." + parseDomain(originUrl).tld
+  //Returns object with links - internals, externals, uniques, repeats, counts
+  function analyseLinks(links, originUrl) {
 
-  linkAnalysis.uniqueLinks = Array.from(new Set(links))
-  let linksCount = {}
-  links.forEach(link => { linksCount[link] = (linksCount[link] || 0) + 1; });
-  linkAnalysis.linksCount = linksCount 
-  linkAnalysis.repeatedLinks = Object.keys(linksCount).filter((link, i) => linksCount[link] > 1).map(link=>({link:link, count:linksCount[link]}))
-  
-  //sort((a,b)=>linksCount[b]-linksCount[a]).map(key=>({key:linksCount[key]}))
-
-  links.forEach((link, i) => {
-    //Check for internal links
-    if (link.indexOf(domainName) > -1) {
-      linkAnalysis.internalLinks.push(link)
-    } else {
-      //All other valid links assumed external
-      linkAnalysis.externalLinks.push(link)
+    let linkAnalysis = {
+      linksCount: '',
+      internalLinks: [],
+      externalLinks: [],
+      uniqueLinks: [],
+      repeatedLinks: []
     }
-  })
 
-  return linkAnalysis
-}
+    linkAnalysis.linksCount = links.length
+
+    const parsedLink = URLParser.parse(originUrl)
+    //Hostname without subdomain
+    const domainName = parseDomain(originUrl).domain + "." + parseDomain(originUrl).tld
+
+    linkAnalysis.uniqueLinks = Array.from(new Set(links))
+    let linksCount = {}
+    links.forEach(link => { linksCount[link] = (linksCount[link] || 0) + 1; });
+    linkAnalysis.repeatedLinks = Object.keys(linksCount).filter((link, i) => linksCount[link] > 1).map(link => ({ link: link, count: linksCount[link] }))
+
+    //sort((a,b)=>linksCount[b]-linksCount[a]).map(key=>({key:linksCount[key]}))
+
+    linkAnalysis.uniqueLinks.forEach((link, i) => {
+      //Check for internal links
+      if (link.indexOf(domainName) > -1) {
+        linkAnalysis.internalLinks.push(link)
+      } else {
+        //All other valid links assumed external
+        linkAnalysis.externalLinks.push(link)
+      }
+    })
+
+    return linkAnalysis
+  }
 
 
-async function test() {
-  const url = 'https://www.reddit.com/r/artificial/comments/4tl6y7/in_future_i_want_to_work_with_ai_what/'
-  const links = await getAllLinksfromUrl(url)
-  const analysis = analyzeLinks(links, url)
+  async function test() {
+    const url = 'https://reddit.com/r/Futurology/'
+    const links = await getAllLinksfromUrl(url)
+    const analysis = analyzeLinks(links, url)
 
-  console.log(analysis)
+    console.log(analysis)
 
-}
+  }
 
-//test()
+  //test()
 
-module.exports = { createScrapeResultsObject, websiteLogo, errorLog }
+  module.exports = { createScrapeResultsObject, websiteLogo, errorLog, getAllLinksfromHTML, getAllLinksfromUrl, analyseLinks }

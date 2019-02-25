@@ -162,6 +162,9 @@ async function asyncSendToMongoDB(file) {
 }
 
 async function asyncSendToMongoDB2(file) {
+
+  const mongoCollection = 'testing'
+
   //Articles Array
   const articlesArray = file.articlesArray
   //Scrape Object
@@ -187,15 +190,15 @@ async function asyncSendToMongoDB2(file) {
   let scrapeRes
   let articlesRes
 
-  try{
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-  const dbo = client.db('testing')
+  try {
+    const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+    const dbo = client.db(mongoCollection)
 
-  scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
-  articlesRes = await dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false })
+    scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
+    articlesRes = await dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false })
 
-  client.close()
-  } catch(e){
+    client.close()
+  } catch (e) {
     console.log(e)
   }
 

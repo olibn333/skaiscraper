@@ -42,5 +42,9 @@ async function scrapeInit() {
   console.log(sendResult)
 }
 
+//Start at reddit, do doublescrape, gather external links from each article, find best links from all sets and scrape them in turn
+async function tripleScrape(){
+
+}
 
 scrapeInit()

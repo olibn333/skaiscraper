@@ -45,26 +45,8 @@ async function genericScrape(url) {
     // const siteLogo = (getLogo.openGraph) ? getLogo.openGraph : getLogo.icon
 
     //Scrape all links
-    let allLinks = {
-      internalLinks: [],
-      externalLinks: []
-    }
-
-    const links = $('a')
-    links.each((i, link) => {
-      const currentLink = $(link).attr('href')
-      try {
-        //Check for internal links
-        if (currentLink.indexOf(parseUrl.extractRootDomain(url)) > -1) {
-          allLinks.internalLinks.push(currentLink)
-        } else if (currentLink.indexOf('http') > -1) {
-          //All other valid links assumed external
-          allLinks.externalLinks.push(currentLink)
-        }
-      } catch(error) {
-        console.log("Error at links.each(): ", error)
-      }
-    })
+    const allLinks = scrapeTools.getAllLinksfromHTML($, url)
+    const linkAnalysis = scrapeTools.analyseLinks(allLinks, url)
     
     //Get body text
     let bodyText = []
@@ -82,12 +64,11 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    return { articleTitle, siteLogo, keywords, bodyText, allLinks, fbLikes:fbLS.likes, fbShares:fbLS.shares }
+    return { articleTitle, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
 
     //reject("Something went wrong in genericScrape..")
   
 }
-
 
 //websitelogotest
 function getImages() {
@@ -120,7 +101,6 @@ async function scrapeMultipleSites(urls) {
   }
   return articlesArray
 }
-
 
 //Arbitrary array of article urls
 const sitesToScrape = [
