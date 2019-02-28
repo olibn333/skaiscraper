@@ -20,6 +20,12 @@ async function genericScrape(url) {
     //Article details
     const articleTitle = errorLog.checkUndefined($('h1').text())
 
+    //Date published
+    let datePublished = errorLog.checkUndefined($('.date').text())
+    if (datePublished === 'Not Found') {
+      datePublished = errorLog.checkUndefined($('time').text())
+    }
+
     //Get site logo
     const logoSelector = [
       '[id=logo] img',
@@ -64,7 +70,7 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    return { articleTitle, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
+    return { articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
 
     //reject("Something went wrong in genericScrape..")
   

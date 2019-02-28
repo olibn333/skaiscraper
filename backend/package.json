@@ -6,9 +6,10 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "headline-parser": "^1.0.0",
-    "htmlparser2": "^3.10.0",
-    "mongodb": "^3.1.10",
-    "puppeteer": "^1.11.0",
+    "htmlparser2": "^3.10.1",
+    "mongodb": "^3.1.13",
+    "parse-domain": "^2.1.7",
+    "puppeteer": "^1.12.2",
     "request": "^2.88.0",
     "uuid": "^3.3.2",
     "valid-url": "^1.0.9",
