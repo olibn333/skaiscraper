@@ -25,15 +25,25 @@ class errorLog {
   constructor() {
     this.errorCount = 0
   }
-  checkUndefined(query) {
-    if (query === undefined || (query.trim().length < 1)) {
-      this.errorCount += 1
-      return "Not Found"
-    } else if (typeof query === 'string') {
-      return query.replace(/\s+/g, ' ').trim()
-    } else {
-      return query
+  checkUndefined(...queries) {
+    let result
+    for (let [index, query] of queries.entries()) {
+      //Check if undefined or empty string
+      if (query === undefined || (query.trim().length < 1)) {
+        //Add error count only when last query checked in array
+        if (index === queries.length - 1) {
+          this.errorCount += 1
+        }
+        result = "Not Found"
+      } else if (typeof query === 'string') {
+        result = query.replace(/\s+/g, ' ').trim()
+        break
+      } else {
+        result = query
+        break
+      }
     }
+    return result
   }
 }
 

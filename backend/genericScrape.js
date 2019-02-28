@@ -5,10 +5,10 @@ const headline_parser = require('headline-parser');
 const scrapeTools = require('./genericScrapeTools')
 const analytics = require('./analytics')
 
-const errorLog = new scrapeTools.errorLog
-
 //Very basic scrape of body text. Needs improving!
 async function genericScrape(url) {
+
+    const errorLog = new scrapeTools.errorLog
 
     //Pass to fb api
     const fbLS = await analytics.getFacebookLikesShares(url)
@@ -21,10 +21,7 @@ async function genericScrape(url) {
     const articleTitle = errorLog.checkUndefined($('h1').text())
 
     //Date published
-    let datePublished = errorLog.checkUndefined($('.date').text())
-    if (datePublished === 'Not Found') {
-      datePublished = errorLog.checkUndefined($('time').text())
-    }
+    let datePublished = errorLog.checkUndefined($('.date').text(), $('time').text())
 
     //Get site logo
     const logoSelector = [
@@ -34,7 +31,10 @@ async function genericScrape(url) {
       '[class*=logo] img'
     ].join()
 
-    const siteLogo = $(logoSelector).attr('src') || 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
+    let siteLogo = errorLog.checkUndefined($(logoSelector).attr('src'))
+    if (siteLogo === 'Not Found') {
+      siteLogo = 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
+    }
 
     // const openGraph = $('meta[property="og:image"]').eq(0).attr('content')
 
@@ -59,7 +59,7 @@ async function genericScrape(url) {
     const paragraphs = $('p')
 
     paragraphs.each(function(i, element) {
-      const currentParagraph = errorLog.checkUndefined($(element).text())
+      const currentParagraph = $(element).text().replace(/\s+/g, ' ').trim()
       if (currentParagraph.length > 50) {
         bodyText.push(currentParagraph)
       }
@@ -70,6 +70,10 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
+    console.log(errorLog.errorCount, " details not found.")
+
+    console.log({ articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis })
+
     return { articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
 
     //reject("Something went wrong in genericScrape..")
