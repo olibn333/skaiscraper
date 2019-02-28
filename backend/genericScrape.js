@@ -36,20 +36,6 @@ async function genericScrape(url) {
       siteLogo = 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
     }
 
-    // const openGraph = $('meta[property="og:image"]').eq(0).attr('content')
-
-    // siteLogo = 'http://' + parseUrl.extractHostname(url) + '/favicon.ico'
-
-    //Try this in next attempt $('meta[property="og:image"]').attr('content')
-    // const getLogo = await new Promise((resolve) => {
-    //   scrapeTools.websiteLogo('http://' + parseUrl.extractHostname(url), (error, images) => {
-    //     if (error) console.log(error)
-    //     resolve(images)
-    //   })
-    // })
-
-    // const siteLogo = (getLogo.openGraph) ? getLogo.openGraph : getLogo.icon
-
     //Scrape all links
     const allLinks = scrapeTools.getAllLinksfromHTML($, url)
     const linkAnalysis = scrapeTools.analyseLinks(allLinks, url)
@@ -71,8 +57,6 @@ async function genericScrape(url) {
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
     console.log(errorLog.errorCount, " details not found.")
-
-    console.log({ articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis })
 
     return { articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
 
