@@ -161,6 +161,10 @@ async function asyncSendToMongoDB(file) {
 
 }
 
+const timeOut = new Promise(function(resolve, reject) {
+  setTimeout(reject('Timeout'), 10000);
+});
+
 async function asyncSendToMongoDB2(file) {
 
   const mongoCollection = 'testing'
@@ -192,7 +196,7 @@ async function asyncSendToMongoDB2(file) {
 
   try {
     console.log("Connecting to database...")
-    const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
+    const client = await Promise.race([timeOut, MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }).catch(e => console.log("Connection Failed", e))])
     const dbo = client.db(mongoCollection)
 
     scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
@@ -212,6 +216,7 @@ async function asyncSendToMongoDB2(file) {
   return ({ scrapeRes, articlesRes, timeDiff })
 
 }
+
 
 
 async function asyncSendToMongoDBTest() {
