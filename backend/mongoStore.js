@@ -191,6 +191,7 @@ async function asyncSendToMongoDB2(file) {
   let articlesRes
 
   try {
+    console.log("Connecting to database...")
     const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
     const dbo = client.db(mongoCollection)
 

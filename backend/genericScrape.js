@@ -56,7 +56,7 @@ async function genericScrape(url) {
     const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    console.log(errorLog.errorCount, " details not found.")
+    console.log(errorLog.errorCount + " details not found.")
 
     return { articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
 
