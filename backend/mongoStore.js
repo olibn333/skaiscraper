@@ -162,7 +162,7 @@ async function asyncSendToMongoDB(file) {
 }
 
 const timeOut = new Promise(function(resolve, reject) {
-  setTimeout(reject('Timeout'), 10000);
+  setTimeout(resolve('Timeout'), 10000);
 });
 
 async function asyncSendToMongoDB2(file) {
@@ -209,9 +209,9 @@ async function asyncSendToMongoDB2(file) {
 
   const endTime = new Date()
   const timeDiff = endTime - beginTime
-  const scrapeInsertCount = scrapeRes.result.n
-  const articlesInsertCount = articlesRes.upsertedCount
-  const articlesUpdateCount = articlesRes.matchedCount
+  // const scrapeInsertCount = scrapeRes.result.n
+  // const articlesInsertCount = articlesRes.upsertedCount
+  // const articlesUpdateCount = articlesRes.matchedCount
 
   return ({ scrapeRes, articlesRes, timeDiff })
 

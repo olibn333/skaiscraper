@@ -9,7 +9,7 @@
     "htmlparser2": "^3.10.1",
     "mongodb": "^3.1.13",
     "parse-domain": "^2.1.7",
-    "puppeteer": "^1.12.2",
+    "puppeteer": "^1.13.0",
     "request": "^2.88.0",
     "uuid": "^3.3.2",
     "valid-url": "^1.0.9",
