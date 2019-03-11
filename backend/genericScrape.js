@@ -23,6 +23,15 @@ async function genericScrape(url) {
     //Date published
     let datePublished = errorLog.checkUndefined($('.date').text(), $('time').text())
 
+    //Get article author
+    const authorSelector = [
+      "a [rel='author']",
+      "div [rel='author']",
+      "span [rel='author']"
+    ].join()
+
+    const articleAuthor = errorLog.checkUndefined($(authorSelector).text())
+
     //Get site logo
     const logoSelector = [
       '[id=logo] img',
@@ -58,7 +67,17 @@ async function genericScrape(url) {
     console.log("Got", bodyText.length, "paras with keywords:", keywords)
     console.log(errorLog.errorCount + " details not found.")
 
-    return { articleTitle, datePublished, siteLogo, keywords, bodyText, fbLikes:fbLS.likes, fbShares:fbLS.shares, linkAnalysis }
+    return {
+      articleTitle,
+      datePublished,
+      articleAuthor,
+      siteLogo,
+      keywords,
+      bodyText,
+      fbLikes:fbLS.likes,
+      fbShares:fbLS.shares,
+      linkAnalysis
+    }
 
     //reject("Something went wrong in genericScrape..")
   
