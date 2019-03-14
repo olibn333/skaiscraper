@@ -43,25 +43,30 @@ async function genericScrape(url) {
     }
   })
 
-  const authorSelector = [
-    `a [rel='author']`,
-    `a [itemprop='author']`,
-    `span [rel='author']`,
-    `.author-name`,
-    '.article-author'
-  ].join()
+  // const authorSelector = [
+  //   `a [rel='author']`,
+  //   `a [itemprop='author']`,
+  //   `span [rel='author']`,
+  //   `.author-name`,
+  //   '.article-author',
+  //   `.byline-author`,
+  //   `span [class='byline-author']`
+  // ].join()
 
   if (articleAuthor === null || articleAuthor === undefined) {
     articleAuthor = errorLog.checkUndefined(
-        $(authorSelector).text(),
-        $(`meta [itemprop='name']`).attr('content')
+        $(`a [rel='author']`).text(),
+        $(`meta [itemprop='name']`).attr('content'),
+        $(`.author-name`).text(),
+        $(`.article-author`).text(),
+        $(`.byline-author`).text()
     )
   }
 
   console.log("ARTICLE AUTHOR: " + articleAuthor)
 
   if (authorProfile === null || authorProfile === undefined) {
-    authorProfile = errorLog.checkUndefined($(authorSelector).attr('href'))
+    authorProfile = errorLog.checkUndefined($(`a [rel='author']`).attr('href'))
   }
 
   console.log("AUTHOR PROFILE: " + authorProfile)
