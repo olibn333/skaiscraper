@@ -105,6 +105,7 @@ async function genericScrape(url) {
     articleTitle,
     datePublished,
     articleAuthor,
+    authorProfile,
     siteLogo,
     keywords,
     bodyText,
