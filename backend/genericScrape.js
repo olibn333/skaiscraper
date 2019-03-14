@@ -8,79 +8,112 @@ const analytics = require('./analytics')
 //Very basic scrape of body text. Needs improving!
 async function genericScrape(url) {
 
-    const errorLog = new scrapeTools.errorLog
+  const errorLog = new scrapeTools.errorLog
 
-    //Pass to fb api
-    const fbLS = await analytics.getFacebookLikesShares(url)
+  //Pass to fb api
+  const fbLS = await analytics.getFacebookLikesShares(url)
 
-    //Scrape details with cheerio
-    const html = await parseUrl.getHTML(url)
-    const $ = cheerio.load(html)
+  //Scrape details with cheerio
+  const html = await parseUrl.getHTML(url)
+  const $ = cheerio.load(html)
 
-    //Article details
-    const articleTitle = errorLog.checkUndefined($('h1').text())
+  //Article details
+  const articleTitle = errorLog.checkUndefined($('h1').text())
 
-    //Date published
-    let datePublished = errorLog.checkUndefined($('.date').text(), $('time').text())
+  //Date published
+  let datePublished = errorLog.checkUndefined(
+    $('.date').text(),
+    $('time').text()
+  )
 
-    //Get article author
-    const authorSelector = [
-      "a [rel='author']",
-      "div [rel='author']",
-      "span [rel='author']"
-    ].join()
+  //Get article author and profile
+  let articleAuthor = null
+  let authorProfile = null
 
-    const articleAuthor = errorLog.checkUndefined($(authorSelector).text())
+  const allElements = $('body').find('*')
 
-    //Get site logo
-    const logoSelector = [
-      '[id=logo] img',
-      '[id*=logo] img',
-      '[class=logo] img',
-      '[class*=logo] img'
-    ].join()
-
-    let siteLogo = errorLog.checkUndefined($(logoSelector).attr('src'))
-    if (siteLogo === 'Not Found') {
-      siteLogo = 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
-    }
-
-    //Scrape all links
-    const allLinks = scrapeTools.getAllLinksfromHTML($, url)
-    const linkAnalysis = scrapeTools.analyseLinks(allLinks, url)
-    
-    //Get body text
-    let bodyText = []
-    const paragraphs = $('p')
-
-    paragraphs.each(function(i, element) {
-      const currentParagraph = $(element).text().replace(/\s+/g, ' ').trim()
-      if (currentParagraph.length > 50) {
-        bodyText.push(currentParagraph)
+  allElements.each(function() {
+    if ($(this).text().trim().toLowerCase() === 'by') {
+      articleAuthor = $(this).next().text().trim()
+      authorProfile = $(this).next().attr('href')
+      if (typeof articleAuthor !== 'string' || articleAuthor.trim().length < 1) {
+        articleAuthor = $(this).children().first().text()
       }
-    })
-
-    //Find keywords from title and body
-    const keywordsTry = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['']
-    const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
-
-    console.log("Got", bodyText.length, "paras with keywords:", keywords)
-    console.log(errorLog.errorCount + " details not found.")
-
-    return {
-      articleTitle,
-      datePublished,
-      articleAuthor,
-      siteLogo,
-      keywords,
-      bodyText,
-      fbLikes:fbLS.likes,
-      fbShares:fbLS.shares,
-      linkAnalysis
+      return false
     }
+  })
 
-    //reject("Something went wrong in genericScrape..")
-  
+  const authorSelector = [
+    `a [rel='author']`,
+    `a [itemprop='author']`,
+    `span [rel='author']`,
+    `.author-name`,
+    '.article-author'
+  ].join()
+
+  if (articleAuthor === null || articleAuthor === undefined) {
+    articleAuthor = errorLog.checkUndefined(
+        $(authorSelector).text(),
+        $(`meta [itemprop='name']`).attr('content')
+    )
+  }
+
+  console.log("ARTICLE AUTHOR: " + articleAuthor)
+
+  if (authorProfile === null || authorProfile === undefined) {
+    authorProfile = errorLog.checkUndefined($(authorSelector).attr('href'))
+  }
+
+  console.log("AUTHOR PROFILE: " + authorProfile)
+
+  //Get site logo
+  const logoSelector = [
+    '[id=logo] img',
+    '[id*=logo] img',
+    '[class=logo] img',
+    '[class*=logo] img'
+  ].join()
+
+  let siteLogo = errorLog.checkUndefined($(logoSelector).attr('src'))
+  if (siteLogo === 'Not Found') {
+    siteLogo = 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
+  }
+
+  //Scrape all links
+  const allLinks = scrapeTools.getAllLinksfromHTML($, url)
+  const linkAnalysis = scrapeTools.analyseLinks(allLinks, url)
+
+  //Get body text
+  let bodyText = []
+  const paragraphs = $('p')
+
+  paragraphs.each(function (i, element) {
+    const currentParagraph = $(element).text().replace(/\s+/g, ' ').trim()
+    if (currentParagraph.length > 50) {
+      bodyText.push(currentParagraph)
+    }
+  })
+
+  //Find keywords from title and body
+  const keywordsTry = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['']
+  const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
+
+  console.log("Got", bodyText.length, "paras with keywords:", keywords)
+  console.log(errorLog.errorCount + " details not found.")
+
+  return {
+    articleTitle,
+    datePublished,
+    articleAuthor,
+    siteLogo,
+    keywords,
+    bodyText,
+    fbLikes: fbLS.likes,
+    fbShares: fbLS.shares,
+    linkAnalysis
+  }
+
+  //reject("Something went wrong in genericScrape..")
 }
 
 //websitelogotest
@@ -91,14 +124,14 @@ function getImages() {
   })
 }
 
-function websiteimagesHandler(images){
+function websiteimagesHandler(images) {
   //or here
   console.log(images)
 }
 
 //Promise test
 function asyncSendToDB(data) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     resolve(mongoStore.sendToDB(data))
   })
 }

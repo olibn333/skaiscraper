@@ -29,12 +29,12 @@ class errorLog {
     let result
     for (let [index, query] of queries.entries()) {
       //Check if undefined or empty string
-      if (query === undefined || (query.trim().length < 1)) {
+      if (query === undefined || query === null || query.trim().length < 1) {
         //Add error count only when last query checked in array
         if (index === queries.length - 1) {
           this.errorCount += 1
         }
-        result = "Not Found"
+        result = 'Not Found'
       } else if (typeof query === 'string') {
         result = query.replace(/\s+/g, ' ').trim()
         break
