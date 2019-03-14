@@ -57,6 +57,7 @@ async function genericScrape(url) {
     articleAuthor = errorLog.checkUndefined(
         $(`a [rel='author']`).text(),
         $(`meta [itemprop='name']`).attr('content'),
+        $(`a [itemprop='author']`).text(),
         $(`.author-name`).text(),
         $(`.article-author`).text(),
         $(`.byline-author`).text()
@@ -66,7 +67,10 @@ async function genericScrape(url) {
   console.log("ARTICLE AUTHOR: " + articleAuthor)
 
   if (authorProfile === null || authorProfile === undefined) {
-    authorProfile = errorLog.checkUndefined($(`a [rel='author']`).attr('href'))
+    authorProfile = errorLog.checkUndefined(
+      $(`a [rel='author']`).attr('href'),
+      $(`a [itemprop='author']`).attr('href')
+    )
   }
 
   console.log("AUTHOR PROFILE: " + authorProfile)
