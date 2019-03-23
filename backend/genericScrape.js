@@ -41,6 +41,17 @@ async function genericScrape(url) {
       }
       return false
     }
+    if ($(this).is('a')) {
+      try {
+        if ($(this).attr('href').indexOf('author') > -1 ) {
+          articleAuthor = $(this).text().trim()
+          authorProfile = $(this).attr('href')
+          return false
+        }
+      } catch (error) {
+
+      }
+    }
   })
 
   // const authorSelector = [
@@ -64,8 +75,6 @@ async function genericScrape(url) {
     )
   }
 
-  console.log("ARTICLE AUTHOR: " + articleAuthor)
-
   if (authorProfile === null || authorProfile === undefined) {
     authorProfile = errorLog.checkUndefined(
       $(`a [rel='author']`).attr('href'),
@@ -74,6 +83,7 @@ async function genericScrape(url) {
   }
 
   console.log("AUTHOR PROFILE: " + authorProfile)
+  console.log("ARTICLE AUTHOR: " + articleAuthor)
 
   //Get site logo
   const logoSelector = [
