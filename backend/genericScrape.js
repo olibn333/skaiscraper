@@ -46,6 +46,18 @@ async function genericScrape(url) {
         if ($(this).attr('href').indexOf('author') > -1 ) {
           articleAuthor = $(this).text().trim()
           authorProfile = $(this).attr('href')
+          console.log("CHECK IT ", ($(this).attr('class')))
+          return false
+        } else if (($(this).attr('class').toLowerCase().indexOf('author') > -1 )) {
+          articleAuthor = $(this).text().trim()
+          authorProfile = $(this).attr('href')
+          return false
+        } else if ($(this).attr('rel').indexOf('author') > -1 ) {
+          articleAuthor = $(this).children().first().text()
+          authorProfile = $(this).attr('href')
+          if (articleAuthor === undefined) {
+            articleAuthor = $(this).text()
+          }
           return false
         }
       } catch (error) {
@@ -82,8 +94,8 @@ async function genericScrape(url) {
     )
   }
 
-  console.log("AUTHOR PROFILE: " + authorProfile)
   console.log("ARTICLE AUTHOR: " + articleAuthor)
+  console.log("AUTHOR PROFILE: " + authorProfile)
 
   //Get site logo
   const logoSelector = [
