@@ -36,6 +36,13 @@ async function getNewReddit(url){
 
     let titleEl, titleText, commentsUrl, picUrl, articleUrl, commentsCount, votesCount
 
+    //Article URL
+    articleUrl = errorLog.checkUndefined($('div a', element).eq(4).attr('href'))
+
+    if (articleUrl.indexOf('youtu') > -1) {
+      return true
+    }
+
     //Title
     titleEl = $('a h2', element)
     titleText = errorLog.checkUndefined(titleEl.text())
@@ -56,9 +63,6 @@ async function getNewReddit(url){
       picUrl = "Not Found"
       errorLog.errorCount += 1
     }
-
-    //Article URL
-    articleUrl = errorLog.checkUndefined($('div a', element).eq(4).attr('href'))
 
     //Article Index
     articleIndex = i
