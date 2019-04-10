@@ -163,7 +163,7 @@ async function asyncSendToMongoDB(file) {
 
 async function asyncSendToMongoDB2(file) {
 
-  const mongoCollection = 'testing'
+  const mongoCollection = 'testing2'
 
   //Articles Array
   const articlesArray = file.articlesArray
@@ -191,8 +191,7 @@ async function asyncSendToMongoDB2(file) {
   let articlesRes
 
   const timeOut = new Promise(function(resolve, reject) {
-    // setTimeout(resolve('Timeout'), 10000);
-    setTimeout(() => resolve('Timeout'), 10000)
+    setTimeout(() => resolve('Timeout'), 20000)
   })
 
   try {
@@ -203,7 +202,7 @@ async function asyncSendToMongoDB2(file) {
 
     scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
     articlesRes = await dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false })
-
+    console.log("Completed database work.")
     client.close()
   } catch (e) {
     console.log(e)

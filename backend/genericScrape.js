@@ -46,7 +46,6 @@ async function genericScrape(url) {
         if ($(this).attr('href').indexOf('author') > -1 ) {
           articleAuthor = $(this).text().trim()
           authorProfile = $(this).attr('href')
-          console.log("CHECK IT ", ($(this).attr('class')))
           return false
         } else if (($(this).attr('class').toLowerCase().indexOf('author') > -1 )) {
           articleAuthor = $(this).text().trim()
@@ -78,6 +77,7 @@ async function genericScrape(url) {
 
   if (articleAuthor === null || articleAuthor === undefined) {
     articleAuthor = errorLog.checkUndefined(
+        $(`.author`).text(),
         $(`a [rel='author']`).text(),
         $(`meta [itemprop='name']`).attr('content'),
         $(`a [itemprop='author']`).text(),
