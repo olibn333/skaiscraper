@@ -126,6 +126,10 @@ async function getOldReddit(url){
     const picEl = $('a.thumbnail > img', element)
     const picUrl = errorLog.checkUndefined(picEl.attr('src'))
 
+    if (picUrl.indexOf('//') === 0) {
+      picUrl = 'http:' + picUrl
+    }
+
     //Article Index
     articleIndex = i
     

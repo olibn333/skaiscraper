@@ -1,5 +1,6 @@
 const request = require('request')
 const validUrl = require('valid-url')
+const nodeUrlTool = require('url')
 
 function getHTML(url) {
   return new Promise((resolve, reject) => {
@@ -36,7 +37,6 @@ function extractUrlDetails(url) {
     sitePath = sitePathAndQuery
     siteQuery = ''
   }
-    
   return {url, hostName, rootDomain, siteName, sitePath, siteQuery}
 }
 
@@ -79,6 +79,5 @@ const extractRootDomain = (url) => {
   }
   return domain;
 }
-
 
 module.exports = { getHTML, extractRootDomain, extractHostname, extractUrlDetails, validUrl }

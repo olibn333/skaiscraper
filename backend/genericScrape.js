@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const mongoStore = require('./mongoStore')
+const domainTools = require('./domainTools')
 const parseUrl = require('./parseUrl')
 const headline_parser = require('headline-parser');
 const scrapeTools = require('./genericScrapeTools')
@@ -65,16 +66,6 @@ async function genericScrape(url) {
     }
   })
 
-  // const authorSelector = [
-  //   `a [rel='author']`,
-  //   `a [itemprop='author']`,
-  //   `span [rel='author']`,
-  //   `.author-name`,
-  //   '.article-author',
-  //   `.byline-author`,
-  //   `span [class='byline-author']`
-  // ].join()
-
   if (articleAuthor === null || articleAuthor === undefined) {
     articleAuthor = errorLog.checkUndefined(
         $(`.author`).text(),
@@ -94,8 +85,7 @@ async function genericScrape(url) {
     )
   }
 
-  console.log("ARTICLE AUTHOR: " + articleAuthor)
-  console.log("AUTHOR PROFILE: " + authorProfile)
+  authorProfile = domainTools.addRootDomain(authorProfile, url)
 
   //Get site logo
   const logoSelector = [
