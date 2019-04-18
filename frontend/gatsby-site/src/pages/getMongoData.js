@@ -1,5 +1,5 @@
 import React from "react"
-import { graphql } from "gatsby"
+import { graphql, Link } from "gatsby"
 import Layout from "../components/layout"
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
+import Chip from '@material-ui/core/Chip';
 
 const styles = theme => ({
   root: {
@@ -53,17 +54,15 @@ const articles = (props) => {
   return (
     <Layout>
       <Grid container spacing={24}>
-        {data.allMongodbTestingArticles.edges.map(({ node }, index) => (
+        {data.allMongodbTesting2Articles.edges.map(({ node }, index) => (
           <div className={classes.root} key={index}>
             <Paper className={classes.paper}>
               <Grid container spacing={16}>
                 <Grid item>
                   <ButtonBase className={classes.image}>
                   <Badge
-                    classes={{
-                      margin: classes.margin,
-                      badge: classes.badge
-                    }}
+                    classes={{ margin: classes.margin, badge: classes.badge }}
+                    invisible={node.votesCount < 1}
                     badgeContent={node.votesCount}
                     max={9999}
                     color="primary"
@@ -79,22 +78,38 @@ const articles = (props) => {
                         <a href={node.articleUrl}>{node.titleText}</a>
                       </Typography>
                       <Typography gutterBottom>{node.bodyText[0]}..</Typography>
-                      <Typography color="textSecondary">Article Number: {index}</Typography>
+                      {(node.articleAuthor !== 'Not Found') &&
+                        <Typography color="textSecondary">
+                          {"Article Author: "}
+                          <a href={node.authorProfile}>{node.articleAuthor}</a>
+                        </Typography>
+                      }
                     </Grid>
                     <Grid item>
-                      <Badge
-                        classes={{
-                          margin: classes.margin,
-                          badge: classes.badge
-                        }}
+                      <Badge classes={{ margin: classes.margin, badge: classes.badge }}
+                        invisible={node.commentsCount < 1}
                         badgeContent={node.commentsCount}
                         max={9999}
                         color="secondary"
                       >
                         <Button variant="contained" className={classes.button}>
-                          <a href={node.commentsUrl}>Comments</a>
+                          <a href={node.commentsUrl}>{"Comments"}</a>
                         </Button>
                       </Badge>
+                    </Grid>
+                    <Grid item>
+                      <Typography>
+                        {"Keywords: "}
+                        {node.keywords.map((word, index) => {
+                          return (word.length > 0) &&
+                            <Chip
+                              style={{ marginRight: '0.2rem' }}
+                              className={classes.chip}
+                              key={index}
+                              label={word}
+                            />
+                        })}
+                      </Typography>
                     </Grid>
                   </Grid>
                   <Grid item>
@@ -112,17 +127,22 @@ const articles = (props) => {
 
 export const query = graphql`
   query {
-    allMongodbTestingArticles(limit: 20) {
+    allMongodbTesting2Articles(limit: 20) {
       edges {
         node {
           titleText
           articleUrl
+          articleAuthor
+          authorProfile
+          datePublished
+          fbShares
           picUrl
           commentsUrl
           siteLogo
           votesCount
           commentsCount
           bodyText
+          keywords
         }
       }
     }

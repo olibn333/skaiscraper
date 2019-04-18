@@ -39,7 +39,7 @@ const articles = ({ data }) => {
 
 export const query = graphql`
 {
-  allArticles: allMongodbTestingArticles(
+  allArticles: allMongodbTesting2Articles(
     filter: {
       votesCount : {
         gt : 1
