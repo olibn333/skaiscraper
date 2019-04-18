@@ -78,6 +78,12 @@ const articles = (props) => {
                         <a href={node.articleUrl}>{node.titleText}</a>
                       </Typography>
                       <Typography gutterBottom>{node.bodyText[0]}..</Typography>
+                      {(node.datePublished !== 'Not Found') &&
+                        <Typography color='textSecondary'>
+                          {"Date Published: "}
+                          {node.datePublished}
+                        </Typography>
+                      }
                       {(node.articleAuthor !== 'Not Found') &&
                         <Typography color="textSecondary">
                           {"Article Author: "}
