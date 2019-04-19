@@ -92,7 +92,8 @@ const articles = (props) => {
                       }
                     </Grid>
                     <Grid item>
-                      <Badge classes={{ margin: classes.margin, badge: classes.badge }}
+                      <Badge
+                        classes={{ margin: classes.margin, badge: classes.badge }}
                         invisible={node.commentsCount < 1}
                         badgeContent={node.commentsCount}
                         max={9999}
@@ -141,7 +142,6 @@ export const query = graphql`
           articleAuthor
           authorProfile
           datePublished
-          fbShares
           picUrl
           commentsUrl
           siteLogo
