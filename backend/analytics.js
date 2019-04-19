@@ -1,14 +1,14 @@
 const request = require('request')
 
 const getFacebookLikesShares = (url) => {
-  const query = 'https://graph.facebook.com/?fields=og_object%7Blikes.summary(total_count).limit(0)%7D,share&id=' + url
+  const query = 'https://graph.facebook.com/?fields=og_object%7Blikes.summary(total_count).limit(0)%7D,engagement&id=' + url
   return new Promise((resolve, reject) => {
     request(query, (error, response) => {
       try {
         if (error) throw error
         else if (response.statusCode === 200) {
           const result = JSON.parse(response.body)
-          const shares = result.share.share_count
+          const shares = result.engagement.share_count
           try {
             const likes = result.og_object.likes.summary.total_count
             resolve({ likes, shares })
@@ -16,7 +16,9 @@ const getFacebookLikesShares = (url) => {
             resolve({ likes: "No data", shares })
           }
         } else {
-          console.log("There was an error fetching facebook likes/shares. Check your access token!")
+          const result = JSON.parse(response.body)
+          console.log("There was an error fetching facebook likes/shares.")
+          console.log(result.error.message)
           resolve({ likes: 'No data', shares: 'No data' })
         }
       } catch (error) {
