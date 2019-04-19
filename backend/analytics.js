@@ -6,15 +6,18 @@ const getFacebookLikesShares = (url) => {
     request(query, (error, response) => {
       try {
         if (error) throw error
-        else if (response.statusCode == 200) {
+        else if (response.statusCode === 200) {
           const result = JSON.parse(response.body)
           const shares = result.share.share_count
           try {
             const likes = result.og_object.likes.summary.total_count
-            resolve( { likes, shares } )
+            resolve({ likes, shares })
           } catch (error) {
-            resolve( { likes: "No data", shares } )
+            resolve({ likes: "No data", shares })
           }
+        } else {
+          console.log("There was an error fetching facebook likes/shares. Check your access token!")
+          resolve({ likes: 'No data', shares: 'No data' })
         }
       } catch (error) {
         console.log("Error at getFaceBookLikesShares: ", error)

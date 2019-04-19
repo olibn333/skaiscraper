@@ -12,7 +12,7 @@ async function genericScrape(url) {
   const errorLog = new scrapeTools.errorLog
 
   //Pass to fb api
-  const fbLS = await analytics.getFacebookLikesShares(url)
+  const fbLS = await analytics.getFacebookLikesShares(url).catch((error) => console.log("Error fetching facebook likes and shares. ", error))
 
   //Scrape details with cheerio
   const html = await parseUrl.getHTML(url)
