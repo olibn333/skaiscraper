@@ -36,10 +36,9 @@ const IndexPage = (props) => {
     })
     return (
       result.map(word =>
-        <Chip
-          style={{ marginRight: '0.2rem', marginTop: '0.2rem' }}
-          label={word}
-        />
+        <Link to={'/' + word}>
+          <Chip style={{ marginRight: '0.2rem', marginTop: '0.2rem', cursor: 'pointer' }} label={word} />
+        </Link>
       )
     )
   }
