@@ -1,7 +1,8 @@
 const request = require('request')
 
 const getFacebookLikesShares = (url) => {
-  const query = 'https://graph.facebook.com/?fields=og_object%7Blikes.summary(total_count).limit(0)%7D,engagement&id=' + url
+  const accessToken = 'EAAJFl1StLOkBAE4jOGN42o9r8mPyUFppEefPnlexRTu6QFmPZB11S2Ev4bq8DvoqcubckLjHW2bV78dsZBQmhZCiUFjVBZA3rco0ZCG5HrNpi7WlZBATKR3OkYJQatslv4R6r1c4rQZBPUIiyC7LRIjFYiZAZAwvSoxbGQO2DXyo1yI0Kna3LzZCeFVzieZAK46J3NyBlhYaK4wFAZDZD'
+  const query = 'https://graph.facebook.com/?fields=og_object%7Blikes.summary(total_count).limit(0)%7D,engagement&id=' + url + '&access_token=' + accessToken
   return new Promise((resolve, reject) => {
     request(query, (error, response) => {
       try {

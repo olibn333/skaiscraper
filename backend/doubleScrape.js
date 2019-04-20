@@ -6,7 +6,7 @@ const analytics = require('./analytics')
 
 async function scrapeInit() {
   //Create Scrape Object Shell by parsing initial source url
-  const url = 'https://old.reddit.com/r/Futurology/'
+  const url = 'https://reddit.com/r/Futurology/'
   const scrapeObjShell = scrapeTools.createScrapeResultsObject(url)
   console.log("Scraping " + url + "...")
 
@@ -40,6 +40,7 @@ async function scrapeInit() {
 
   //Process results
   console.log(sendResult)
+  
 }
 
 //Start at reddit, do doublescrape, gather external links from each article, find best links from all sets and scrape them in turn

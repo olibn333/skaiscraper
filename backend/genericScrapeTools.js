@@ -114,16 +114,4 @@ function analyseLinks(links, originUrl) {
   return linkAnalysis
 }
 
-
-async function test() {
-  const url = 'https://reddit.com/r/Futurology/'
-  const links = await getAllLinksfromUrl(url)
-  const analysis = analyzeLinks(links, url)
-
-  console.log(analysis)
-
-}
-
-//test()
-
 module.exports = { createScrapeResultsObject, websiteLogo, errorLog, getAllLinksfromHTML, getAllLinksfromUrl, analyseLinks }

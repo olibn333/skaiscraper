@@ -1,10 +1,6 @@
 const readline = require('readline');
 const MongoClient = require('mongodb').MongoClient;
 
-// process.on('unhandledRejection', (reason, promise) => {
-//   console.warn('Unhandled promise rejection:', promise, 'reason:', reason.stack || reason);
-// });
-
 async function constructMongoUrl() {
   try {
     const creds = require('../skai-config')
@@ -20,23 +16,6 @@ async function constructMongoUrl() {
   const url = "mongodb+srv://" + uname + ":" + pword + "@cluster0-ywxua.mongodb.net/test?readPreference=secondary";
   //const url = "mongodb://"+uname+":"+pword+"@cluster0-shard-00-00-ywxua.mongodb.net:27017,cluster0-shard-00-01-ywxua.mongodb.net:27017,cluster0-shard-00-02-ywxua.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
   return url
-}
-
-function sendToDB(file) {
-  try {
-    const creds = require('../skai-config')
-    uname = creds.username
-    pword = creds.password
-    sendToMongoDB(uname, pword, file)
-  }
-  catch (e) {
-    console.log("No local config file found. Please enter username and password:")
-    promptUserNameandPassword(handleResult)
-  }
-}
-
-function handleResult(uname, pword, file) {
-  sendToMongoDB(uname, pword, file)
 }
 
 function promptUserNameandPassword() {
@@ -56,110 +35,6 @@ function promptUserNameandPassword() {
 
   return credsPromise
 };
-
-function sendToMongoDB(username, password, file) {
-  const url = "mongodb+srv://" + username + ":" + password + "@cluster0-ywxua.mongodb.net/test?retryWrites=true";
-
-  //Arrticles Array
-  const articlesArray = file.articlesArray
-  const articleUrlsFilter = articlesArray.map(a => a.articleUrl).join()
-
-  //Scrape Object
-  const scrapeObject = Object.assign(file, {})
-  delete scrapeObject.articlesArray
-
-  //Insert Scrape Obj, Upsert articles
-  MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }, function (err, db) {
-    if (err) throw err
-    console.log("Database Connected!")
-    const dbo = db.db('testing') //skaiScraper-referenced
-
-    // return new Promise(async function (resolve, reject) {
-    //   let taskComplete = 0
-
-    //Insert Scrape Object
-    dbo.collection('scrapes').insertOne(scrapeObject, function (error, res) {
-      if (error) throw error
-      console.log("Inserted " + res.ops.length + " document(s) to scrapes collection.")
-    })
-
-    // //Insert Articles Array
-    // dbo.collection('articlesTest').insertMany(articlesArray, function (err, res) {
-    //   // if (err) throw err
-    //   console.log("Inserted " + res.ops.length + " document(s) to articles collection.")
-    // })
-
-    //Upsert Articles Array
-    articlesArray.forEach((article, i) => {
-
-      dbo.collection('articlesTest').updateOne(
-        { articleUrl: article.articleUrl },
-        { $set: article },
-        { upsert: true },
-        function (err, res) {
-          // if (err) throw err
-          if (i == articlesArray.length - 1) {
-            updateCounts(res.upsertedCount, res.modifiedCount)
-            console.log("Updated " + updatedDocs + ", Inserted " + newDocs + " document(s) to articles collection.")
-          }
-          else { updateCounts(res.upsertedCount, res.modifiedCount) }
-        }
-      )
-    })
-    db.close()
-  })
-}
-
-async function asyncSendToMongoDB(file) {
-  //Arrticles Array
-  const articlesArray = file.articlesArray
-  //Scrape Object
-  const scrapeObject = Object.assign(file, {})
-  delete scrapeObject.articlesArray
-
-  const url = await constructMongoUrl()
-  const beginTime = new Date()
-
-  const bulkUpdateObj = articlesArray.map((article, i) => {
-    const upD =
-    {
-      "updateOne":
-      {
-        "filter": { articleUrl: article.articleUrl },
-        "update": { $set: article },
-        "upsert": true
-      }
-    }
-    return upD
-  })
-
-  return MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-    .then(client => {
-      const dbo = client.db('real')
-      const scrapeCol = dbo.collection('scrapes')
-      const articlesCol = dbo.collection('articles')
-
-      scrapeCol.insertOne(scrapeObject)
-        .then(res => console.log(res.result.n + " inserted to scrapes."))
-        .catch(e => console.log(e))
-
-      articlesCol.bulkWrite(bulkUpdateObj, { ordered: false })
-        .then(res => console.log(res.upsertedCount + " inserted,", res.matchedCount + " updated in articles."))
-        .catch(e => console.log(e))
-
-      return client.close()
-    })
-
-    .then(() => {
-      const endTime = new Date()
-      const timeDiff = endTime - beginTime
-      return console.log("DB writes executed in " + timeDiff + "ms")
-    })
-
-    .then()
-    .catch(e => console.log(e))
-
-}
 
 async function asyncSendToMongoDB2(file) {
 
@@ -191,13 +66,14 @@ async function asyncSendToMongoDB2(file) {
   let articlesRes
 
   const timeOut = new Promise(function(resolve, reject) {
-    setTimeout(() => resolve('Timeout'), 20000)
+    setTimeout(() => resolve('Timeout'), 10000)
   })
 
   try {
     console.log("Connecting to database...")
     const client = await Promise.race([timeOut, MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }).catch(e => console.log("Connection Failed", e))])
     console.log("Result of Promise.race(): ", client)
+
     const dbo = client.db(mongoCollection)
 
     scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
@@ -218,24 +94,4 @@ async function asyncSendToMongoDB2(file) {
 
 }
 
-
-
-async function asyncSendToMongoDBTest() {
-  const url = await constructMongoUrl()
-
-  const beginTime = new Date()
-
-  const client = await MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true })
-  const dbo = client.db('testing')
-
-  const scrapeRes = await dbo.collection('scrapes').findOne({})
-  const artRes = await dbo.collection('articles').findOne({})
-
-  client.close()
-
-  console.log(scrapeRes, artRes)
-}
-
-//asyncSendToMongoDBTest()
-
-module.exports = { sendToDB, constructMongoUrl, asyncSendToMongoDB, asyncSendToMongoDB2 }
+module.exports = { constructMongoUrl, asyncSendToMongoDB2 }
