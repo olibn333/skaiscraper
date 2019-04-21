@@ -36,6 +36,61 @@ function promptUserNameandPassword() {
   return credsPromise
 };
 
+async function sendToMongoDB3(file){
+
+  const mongoCollection = 'testing2'
+
+  //Articles Array
+  const articlesArray = file.articlesArray
+  //Scrape Object
+  const scrapeObject = Object.assign(file, {})
+  delete scrapeObject.articlesArray
+
+  const url = await constructMongoUrl()
+  const beginTime = new Date()
+
+  const bulkUpdateObj = articlesArray.map((article, i) => {
+    const upD =
+    {
+      "updateOne":
+      {
+        "filter": { articleUrl: article.articleUrl },
+        "update": { $set: article },
+        "upsert": true
+      }
+    }
+    return upD
+  })
+
+  try {
+    console.log("Connecting to database...")
+    MongoClient.connect(url,{ useNewUrlParser: true, forceServerObjectId: true }, function(err,db){
+      if (!err){
+        console.log("Connected.")
+        let dbo = db.db(mongoCollection)
+        //Insert Scrape Obj
+        dbo.collection('scrapes').insertOne(scrapeObject,function(err,result){
+          if (!err){
+          //Process Scrape Insert Result
+          console.log("Inserted " + result.result.n + " scrape object to scrapes collection.")
+          //Insert Articles
+          dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false },function(err,result){
+          if (!err){
+            //Process Articles Write Result
+            console.log("Updated " + result.matchedCount + ", Created " + result.upsertedCount + " articles.")
+            const endTime = new Date()
+            const timeDiff = endTime - beginTime
+            console.log("DB Work took " + timeDiff + "ms")
+            db.close()
+            } else {console.log(err)}
+          })} else {console.log(err)}
+      })} else { console.log(err)}
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 async function asyncSendToMongoDB2(file) {
 
   const mongoCollection = 'testing2'
@@ -71,10 +126,10 @@ async function asyncSendToMongoDB2(file) {
 
   try {
     console.log("Connecting to database...")
-    const client = await Promise.race([timeOut, MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }).catch(e => console.log("Connection Failed", e))])
+    let client = await Promise.race([timeOut, MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }).catch(e => console.log("Connection Failed", e))])
     console.log("Result of Promise.race(): ", client)
 
-    const dbo = client.db(mongoCollection)
+    let dbo = client.db(mongoCollection)
 
     scrapeRes = await dbo.collection('scrapes').insertOne(scrapeObject)
     articlesRes = await dbo.collection('articles').bulkWrite(bulkUpdateObj, { ordered: false })
@@ -94,4 +149,4 @@ async function asyncSendToMongoDB2(file) {
 
 }
 
-module.exports = { constructMongoUrl, asyncSendToMongoDB2 }
+module.exports = { constructMongoUrl, asyncSendToMongoDB2, sendToMongoDB3}

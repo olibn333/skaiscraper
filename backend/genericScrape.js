@@ -119,8 +119,8 @@ async function genericScrape(url) {
   const keywordsTry = headline_parser.findKeywords(articleTitle, bodyText.join(), 3) || ['']
   const keywords = Array.isArray(keywordsTry) ? keywordsTry : ['']
 
-  console.log("Got", bodyText.length, "paras with keywords:", keywords)
-  console.log(errorLog.errorCount + " details not found.")
+  // console.log("Got", bodyText.length, "paras with keywords:", keywords)
+  // console.log(errorLog.errorCount + " details not found.")
 
   return {
     articleTitle,
@@ -151,13 +151,6 @@ function websiteimagesHandler(images) {
   console.log(images)
 }
 
-//Promise test
-function asyncSendToDB(data) {
-  return new Promise(function (resolve, reject) {
-    resolve(mongoStore.sendToDB(data))
-  })
-}
-
 async function scrapeMultipleSites(urls) {
   let articlesArray = []
   for (url of urls) {
@@ -177,17 +170,5 @@ const sitesToScrape = [
   'https://newatlas.com/hyundai-elevate-walking-car/57865/',
   'https://www.modernhealthcare.com/article/20190104/NEWS/190109951'
 ]
-
-//Initiate scrape
-//scrapeMultipleSites(sitesToScrape)
-
-// THIS IS USELESS, BUT IT'S A COOL EXAMPLE OF AN ANONYMOUS ASYNC FUNCTION THAT GETS IMMEDIATELY CALLED
-// (async () => {
-//   let scrapeResults = await scrapeMultipleSites(sitesToScrape)
-//   scrapeResults = { ...scrapeResults }
-//   mongoStore.sendToDB(scrapeResults)
-// })().catch(err => {
-//   console.error(err)
-// })
 
 module.exports = { scrapeMultipleSites, genericScrape }

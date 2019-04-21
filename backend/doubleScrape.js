@@ -13,7 +13,7 @@ async function scrapeInit() {
   //Get Articles from Subreddit
   const articlesArrayObj = await redditScrape.getRedditArticlesFromSubreddit(url)
   
-  console.log(articlesArrayObj.articlesArray.length + " articles scraped with " + articlesArrayObj.errorCount + " details not found.")
+  console.log("Found " + articlesArrayObj.articlesArray.length + " articles.")
   
   //Assign articleIds to articlesArrayObj
   articlesArrayObj.articlesArray.forEach(article => article.articleId = scrapeObjShell.scrapeId + "-" + article.articleIndex)
@@ -35,12 +35,12 @@ async function scrapeInit() {
   //Add some metadata to scrape
   scrapeObj.articleCount = articleDetails.length
 
-  //Send to DB
-  const sendResult = await mongoStore.asyncSendToMongoDB2(scrapeObj)
-
-  //Process results
-  console.log(sendResult)
+  //Send to DB Callback-style
+  mongoStore.sendToMongoDB3(scrapeObj)
   
+  // //Send to DB with promise
+  // const res = await mongoStore.asyncSendToMongoDB2(scrapeObj)
+  // console.log(res)
 }
 
 //Start at reddit, do doublescrape, gather external links from each article, find best links from all sets and scrape them in turn
