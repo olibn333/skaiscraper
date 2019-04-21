@@ -66,7 +66,6 @@ async function sendToMongoDB3(file){
     console.log("Connecting to database...")
     MongoClient.connect(url,{ useNewUrlParser: true, forceServerObjectId: true }, function(err,db){
       if (!err){
-        console.log("Connected.")
         let dbo = db.db(mongoCollection)
         //Insert Scrape Obj
         dbo.collection('scrapes').insertOne(scrapeObject,function(err,result){
@@ -87,8 +86,9 @@ async function sendToMongoDB3(file){
       })} else { console.log(err)}
     })
   } catch (e) {
-    console.log(e)
+    return console.log(e)
   }
+  return "Connected."
 }
 
 async function asyncSendToMongoDB2(file) {
