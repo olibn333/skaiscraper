@@ -3,7 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 async function constructMongoUrl() {
   try {
-    const creds = require('../skai-config')
+    const creds = require('./skai-config')
     uname = creds.username
     pword = creds.password
   }

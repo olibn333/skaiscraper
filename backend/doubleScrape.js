@@ -48,4 +48,4 @@ async function tripleScrape(){
 
 }
 
-scrapeInit()
+module.exports = {scrapeInit}
