@@ -6,6 +6,6 @@ exports.requestScrape = (req, res) => {
     scrape.scrapeInit()
     res.status(200).send('Scraping...')} 
   else {
-    res.status(403).sesnd('Not Authorised')
+    res.status(403).send('Not Authorised')
   }
 }
