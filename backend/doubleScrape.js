@@ -36,12 +36,13 @@ async function scrapeInit() {
   scrapeObj.articleCount = articleDetails.length
 
   //Send to DB Callback-style
-  const res = await mongoStore.sendToMongoDB3(scrapeObj)
+  //const res = await mongoStore.sendToMongoDB3(scrapeObj)
   
   // //Send to DB with promise
-  // const res = await mongoStore.asyncSendToMongoDB2(scrapeObj)
-  
-  console.log(res)
+  const res = await mongoStore.asyncSendToMongoDB2(scrapeObj)
+
+  //console.log(res)
+  return res
 }
 
 //Start at reddit, do doublescrape, gather external links from each article, find best links from all sets and scrape them in turn
