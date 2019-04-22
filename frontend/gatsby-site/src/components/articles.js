@@ -121,12 +121,14 @@ const Articles = (props) => {
                           {"Keywords: "}
                           {((node.keywords) ? node.keywords : []).map((word, index) => {
                             return (word.length > 0) &&
-                              <Chip
-                                style={{ marginRight: '0.2rem' }}
-                                className={classes.chip}
-                                key={index}
-                                label={word}
-                              />
+                              <Link to={'/' + word}>
+                                <Chip
+                                  style={{ marginRight: '0.2rem', cursor: 'pointer' }}
+                                  className={classes.chip}
+                                  key={index}
+                                  label={word}
+                                />
+                              </Link>
                           })}
                         </Typography>
                       </Grid>
