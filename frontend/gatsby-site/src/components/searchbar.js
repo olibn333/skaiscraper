@@ -170,9 +170,11 @@ class PrimarySearchAppBar extends React.Component {
             <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
               <MenuIcon />
             </IconButton>
-            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-              {this.props.title}
-            </Typography>
+            <Link to={'/'}>
+              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+                {this.props.title}
+              </Typography>
+            </Link>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
                 <SearchIcon />
