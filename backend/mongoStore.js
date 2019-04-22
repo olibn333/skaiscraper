@@ -127,7 +127,7 @@ async function asyncSendToMongoDB2(file) {
   try {
     console.log("Connecting to database...")
     let client = await Promise.race([timeOut, MongoClient.connect(url, { useNewUrlParser: true, forceServerObjectId: true }).catch(e => console.log("Connection Failed", e))])
-    console.log("Result of Promise.race(): ", client)
+    //console.log("Result of Promise.race(): ", client)
 
     let dbo = client.db(mongoCollection)
 

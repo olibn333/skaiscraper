@@ -154,7 +154,7 @@ function websiteimagesHandler(images) {
 async function scrapeMultipleSites(urls) {
   let articlesArray = []
   for (url of urls) {
-    console.log("Scraping ", url)
+    //console.log("Scraping ", url)
     //Await promise to resolve
     const currentScrapeData = await genericScrape(url).catch(error => console.log(error))
     //console.log(currentScrapeData)
