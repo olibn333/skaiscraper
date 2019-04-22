@@ -2,7 +2,7 @@ const scrape = require('./doubleScrape')
 
 
 exports.requestScrape = (req, res) => {
-  if (req.body.includes('secretpassword')) {
+  if (req.query.q == 'oneScrapePlease') {
     scrape.scrapeInit()
     res.status(200).send('Scraping...')} 
   else {
