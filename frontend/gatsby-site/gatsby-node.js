@@ -16,6 +16,17 @@ exports.createPages = ({ graphql, actions }) => {
         allMongodbTesting2Articles {
           edges {
             node {
+              titleText
+              articleUrl
+              articleAuthor
+              authorProfile
+              datePublished
+              picUrl
+              commentsUrl
+              siteLogo
+              votesCount
+              commentsCount
+              bodyText
               keywords
             }
           }
@@ -31,6 +42,7 @@ exports.createPages = ({ graphql, actions }) => {
               component: path.resolve(`./src/templates/articles-by-keyword.js`),
               context: {
                 keyword: word,
+                contextData: result.data.allMongodbTesting2Articles.edges
               },
             })
           })

@@ -1,15 +1,9 @@
 import React from "react"
 import { graphql, Link } from "gatsby"
-import Layout from "../components/layout"
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import Button from '@material-ui/core/Button';
-import Badge from '@material-ui/core/Badge';
-import Chip from '@material-ui/core/Chip';
+import Articles from '../components/articles'
+import Layout from "../components/layout";
 
 const styles = theme => ({
   root: {
@@ -48,25 +42,32 @@ const styles = theme => ({
   }
 });
 
-const articles = (props) => {
-  const { classes, data } = props
+const articles = ({ data }) => (
+  <Layout>
+    <Articles data={data.allMongodbTesting2Articles.edges} />
+  </Layout>
+)
+
+
+/* const articles = (props) => {
+  const { classes, data, pageContext } = props
   console.log(data)
   return (
-    <Layout>
-      <Grid container spacing={24}>
-        {data.allMongodbTesting2Articles.edges.map(({ node }, index) => (
+    <Grid container spacing={24}>
+      {((pageContext.data) ? pageContext.data : data.allMongodbTesting2Articles.edges)
+        .map(({ node }, index) => (
           <div className={classes.root} key={index}>
             <Paper className={classes.paper}>
               <Grid container spacing={16}>
                 <Grid item>
                   <ButtonBase className={classes.image}>
-                  <Badge
-                    classes={{ margin: classes.margin, badge: classes.badge }}
-                    invisible={node.votesCount < 1}
-                    badgeContent={node.votesCount}
-                    max={9999}
-                    color="primary"
-                  >
+                    <Badge
+                      classes={{ margin: classes.margin, badge: classes.badge }}
+                      invisible={node.votesCount < 1}
+                      badgeContent={node.votesCount}
+                      max={9999}
+                      color="primary"
+                    >
                       <img className={classes.img} alt="complex" src={node.picUrl} />
                     </Badge>
                   </ButtonBase>
@@ -127,10 +128,9 @@ const articles = (props) => {
             </Paper>
           </div>
         ))}
-      </Grid>
-    </Layout>
+    </Grid>
   )
-}
+} */
 
 export const query = graphql`
   query {
