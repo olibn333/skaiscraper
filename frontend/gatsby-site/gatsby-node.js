@@ -38,7 +38,7 @@ exports.createPages = ({ graphql, actions }) => {
           node.keywords.forEach(word => {
             if (word === '') return
             createPage({
-              path: word,
+              path: encodeURIComponent(word),
               component: path.resolve(`./src/templates/articles-by-keyword.js`),
               context: {
                 keyword: word,
