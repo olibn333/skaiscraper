@@ -121,7 +121,7 @@ const Articles = (props) => {
                           {"Keywords: "}
                           {((node.keywords) ? node.keywords : []).map((word, index) => {
                             return (word.length > 0) &&
-                              <Link to={'/' + word}>
+                              <Link to={encodeURIComponent('/' + word)}>
                                 <Chip
                                   style={{ marginRight: '0.2rem', cursor: 'pointer' }}
                                   className={classes.chip}
