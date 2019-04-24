@@ -13,13 +13,13 @@ const getFacebookLikesShares = (url) => {
             const likes = result.og_object.likes.summary.total_count
             resolve({ likes, shares })
           } catch (error) {
-            resolve({ likes: "No data", shares })
+            resolve({ likes: null, shares })
           }
         } else {
           const result = JSON.parse(response.body)
           console.log("There was an error fetching facebook likes/shares.")
           console.log(result.error.message)
-          resolve({ likes: 'No data', shares: 'No data' })
+          resolve({ likes: null, shares: null })
         }
       } catch (error) {
         console.log("Error at getFaceBookLikesShares: ", error)
