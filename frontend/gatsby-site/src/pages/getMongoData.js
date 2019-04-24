@@ -134,7 +134,7 @@ const articles = ({ data }) => (
 
 export const query = graphql`
   query {
-    allMongodbTesting2Articles(limit: 20) {
+    allMongodbTesting2Articles {
       edges {
         node {
           titleText

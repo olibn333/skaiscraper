@@ -28,7 +28,7 @@ const IndexPage = (props) => {
 
     let result = []
     Object.keys(keywords).forEach((key, index, array) => {
-      if (keywords[key] > 1) {
+      if (keywords[key] > 3) {
         if (!bannedWords.includes(array[index])) {
           result.push(array[index])
         }
