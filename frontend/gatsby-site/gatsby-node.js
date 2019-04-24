@@ -33,20 +33,30 @@ exports.createPages = ({ graphql, actions }) => {
         }
       }
     `).then(result => {
-      result.data.allMongodbTesting2Articles.edges.forEach(({ node }) => {
+      let keywordList = []
+      result.data.allMongodbTesting2Articles.edges.forEach(({ node }, index, allArticles) => {
         if (node.keywords) {
           node.keywords.forEach(word => {
-            if (word === '') return
-            createPage({
-              path: encodeURIComponent(word),
-              component: path.resolve(`./src/templates/articles-by-keyword.js`),
-              context: {
-                keyword: word,
-                contextData: result.data.allMongodbTesting2Articles.edges
-              },
-            })
+            if (!keywordList.includes(word)) {
+              keywordList.push(word)
+              if (word === '') return
+              createPage({
+                path: encodeURIComponent(word),
+                component: path.resolve(`./src/templates/articles-by-keyword.js`),
+                context: {
+                  keyword: word,
+                  contextData: allArticles.filter(({ node }) => {
+                    if (node.keywords) {
+                      if (node.keywords.includes(word)) {
+                        return true
+                      }
+                    }
+                  })
+                }
+              })
+            }
           })
-        } 
+        }
       })
       resolve()
     })
