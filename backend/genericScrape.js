@@ -99,7 +99,7 @@ async function genericScrape(url) {
 
   let siteLogo = errorLog.checkUndefined($(logoSelector).attr('src'))
   if (siteLogo === 'Not Found') {
-    siteLogo = 'http://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
+    siteLogo = 'https://' + parseUrl.extractRootDomain(url) + '/favicon.ico'
   }
 
   //Scrape all links

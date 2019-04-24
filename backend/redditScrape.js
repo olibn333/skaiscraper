@@ -127,7 +127,7 @@ async function getOldReddit(url){
     let picUrl = errorLog.checkUndefined(picEl.attr('src'))
 
     if (picUrl.indexOf('//') === 0) {
-      picUrl = 'http:' + picUrl
+      picUrl = 'https:' + picUrl
     }
 
     //Article Index
