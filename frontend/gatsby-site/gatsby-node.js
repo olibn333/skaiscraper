@@ -45,13 +45,9 @@ exports.createPages = ({ graphql, actions }) => {
                 component: path.resolve(`./src/templates/articles-by-keyword.js`),
                 context: {
                   keyword: word,
-                  contextData: allArticles.filter(({ node }) => {
-                    if (node.keywords) {
-                      if (node.keywords.includes(word)) {
-                        return true
-                      }
-                    }
-                  })
+                  contextData: allArticles.filter(({ node }) =>
+                    node.keywords && node.keywords.includes(word)
+                  )
                 }
               })
             }
