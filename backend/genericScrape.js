@@ -14,7 +14,7 @@ async function genericScrape(url) {
   //Pass to fb api
   //Temporarily disabled until access token is acquired
   //const fbLS = await analytics.getFacebookLikesShares(url).catch((error) => console.log("Error fetching facebook likes and shares. ", error))
-  const fbLS = { likes: 'No data', shares: 'No data' }
+  const fbLS = { likes: null, shares: null }
 
   //Scrape details with cheerio
   const html = await parseUrl.getHTML(url)
